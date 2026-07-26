@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Product · HisabGhor POS</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+
+        :root{
+            --navy:#0B1D33;
+            --navy-2:#122744;
+            --paper:#F3F6FB;
+            --card:#FFFFFF;
+            --ink:#101828;
+            --muted:#65708A;
+            --line:#E3E8F2;
+            --blue:#2F80ED;
+            --blue-dark:#1D64C9;
+            --gold:#E3A73B;
+            --danger:#E0483E;
+            --radius:16px;
+            --mono:'JetBrains Mono', monospace;
+            --display:'Sora', sans-serif;
+            --body:'Inter', sans-serif;
+        }
+
+        *{ margin:0; padding:0; box-sizing:border-box; }
+
+        body{
+            font-family:var(--body);
+            background:
+                    radial-gradient(circle at 15% -10%, rgba(47,128,237,0.10), transparent 45%),
+                    radial-gradient(circle at 100% 0%, rgba(227,167,59,0.10), transparent 40%),
+                    var(--paper);
+            color:var(--ink);
+            min-height:100vh;
+        }
+
+        /* ---------- Top bar ---------- */
+        .navbar{
+            background:linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%);
+            color:#fff;
+            padding:16px 32px;
+            display:flex;
+            align-items:center;
+            gap:12px;
+            box-shadow:0 2px 18px rgba(11,29,51,0.25);
+        }
+
+        .navbar .mark{
+            width:34px; height:34px;
+            border-radius:9px;
+            background:linear-gradient(135deg, var(--blue), var(--blue-dark));
+            display:flex; align-items:center; justify-content:center;
+            font-family:var(--display); font-weight:800; font-size:16px;
+            box-shadow:inset 0 0 0 1px rgba(255,255,255,0.15);
+        }
+
+        .navbar .title{
+            font-family:var(--display);
+            font-weight:700;
+            font-size:19px;
+            letter-spacing:0.2px;
+        }
+
+        .navbar .sub{
+            font-size:12px;
+            color:rgba(255,255,255,0.55);
+            font-weight:500;
+            margin-left:auto;
+            letter-spacing:0.4px;
+            text-transform:uppercase;
+        }
+
+        /* ---------- Page shell ---------- */
+        .shell{
+            max-width:980px;
+            margin:48px auto;
+            padding:0 24px;
+            display:grid;
+            grid-template-columns:1.3fr 0.9fr;
+            gap:28px;
+            align-items:start;
+        }
+
+        @media (max-width:820px){
+            .shell{ grid-template-columns:1fr; }
+        }
+
+        /* ---------- Form card ---------- */
+        .card{
+            background:var(--card);
+            border-radius:var(--radius);
+            border:1px solid var(--line);
+            box-shadow:0 12px 30px -14px rgba(16,24,40,0.18);
+            overflow:hidden;
+        }
+
+        .card-head{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            padding:18px 26px;
+            border-bottom:1px solid var(--line);
+            background:linear-gradient(180deg, #FAFBFE, #FFFFFF);
+        }
+
+        .dot{ width:10px; height:10px; border-radius:50%; }
+        .dot.r{ background:#F04438; }
+        .dot.y{ background:#F5B94A; }
+        .dot.g{ background:#37C978; }
+
+        .card-head span.label{
+            font-family:var(--mono);
+            font-size:12.5px;
+            color:var(--muted);
+            margin-left:8px;
+            letter-spacing:0.3px;
+        }
+
+        form{ padding:30px 30px 26px; }
+
+        h2{
+            font-family:var(--display);
+            font-size:22px;
+            font-weight:700;
+            color:var(--navy);
+            margin-bottom:4px;
+        }
+
+        .lede{
+            font-size:13.5px;
+            color:var(--muted);
+            margin-bottom:22px;
+            display:flex;
+            align-items:center;
+            gap:8px;
+        }
+
+        .id-chip{
+            font-family:var(--mono);
+            font-size:11.5px;
+            background:rgba(47,128,237,0.10);
+            color:var(--blue-dark);
+            padding:3px 9px;
+            border-radius:999px;
+            font-weight:600;
+        }
+
+        .field{ margin-top:18px; position:relative; }
+
+        label{
+            display:flex;
+            justify-content:space-between;
+            font-size:12.5px;
+            font-weight:600;
+            color:var(--navy);
+            margin-bottom:7px;
+            letter-spacing:0.2px;
+            text-transform:uppercase;
+        }
+
+        label .hint{
+            font-weight:500;
+            color:var(--muted);
+            text-transform:none;
+            font-size:12px;
+        }
+
+        input, select{
+            width:100%;
+            padding:12px 14px;
+            border:1.5px solid var(--line);
+            border-radius:10px;
+            font-size:15px;
+            font-family:var(--body);
+            color:var(--ink);
+            background:#FCFDFF;
+            transition:border-color .15s ease, box-shadow .15s ease, background .15s ease;
+        }
+
+        input[name="price"], input[name="stock"]{
+            font-family:var(--mono);
+        }
+
+        input:hover, select:hover{ border-color:#C9D3E4; }
+
+        input:focus, select:focus{
+            outline:none;
+            border-color:var(--blue);
+            background:#fff;
+            box-shadow:0 0 0 4px rgba(47,128,237,0.14);
+        }
+
+        select{ appearance:none;
+            background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%2365708A' stroke-width='2' fill='none' fill-rule='evenodd'/%3E%3C/svg%3E");
+            background-repeat:no-repeat;
+            background-position:right 16px center;
+            padding-right:38px;
+        }
+
+        .error{
+            color:var(--danger);
+            font-size:12.5px;
+            margin-top:5px;
+            font-weight:500;
+        }
+
+        .btn{
+            width:100%;
+            margin-top:28px;
+            padding:14px;
+            border:none;
+            border-radius:10px;
+            background:linear-gradient(135deg, var(--blue), var(--blue-dark));
+            color:white;
+            font-size:15.5px;
+            font-weight:700;
+            font-family:var(--display);
+            letter-spacing:0.3px;
+            cursor:pointer;
+            box-shadow:0 10px 20px -8px rgba(29,100,201,0.55);
+            transition:transform .12s ease, box-shadow .12s ease, filter .12s ease;
+        }
+
+        .btn:hover{ transform:translateY(-1px); filter:brightness(1.04); }
+        .btn:active{ transform:translateY(0px); box-shadow:0 6px 14px -8px rgba(29,100,201,0.55); }
+
+        .back{
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:6px;
+            margin-top:16px;
+            text-decoration:none;
+            color:var(--muted);
+            font-weight:600;
+            font-size:13.5px;
+            transition:color .15s ease;
+        }
+        .back:hover{ color:var(--navy); }
+
+        /* ---------- Live receipt preview ---------- */
+        .receipt-wrap{ position:sticky; top:28px; }
+
+        .receipt{
+            background:#fff;
+            border-radius:var(--radius);
+            box-shadow:0 14px 34px -16px rgba(16,24,40,0.22);
+            position:relative;
+            padding:26px 24px 20px;
+            font-family:var(--mono);
+        }
+
+        .receipt::before, .receipt::after{
+            content:"";
+            position:absolute;
+            left:0; right:0;
+            height:14px;
+            background:
+                    radial-gradient(circle at 8px 0, transparent 7px, #fff 7.5px) 0 0 / 16px 100% repeat-x;
+        }
+        .receipt::before{ top:-7px; transform:rotate(180deg); }
+        .receipt::after{ bottom:-7px; }
+
+        .receipt-title{
+            font-family:var(--display);
+            font-weight:700;
+            font-size:14px;
+            color:var(--navy);
+            text-transform:uppercase;
+            letter-spacing:1px;
+            text-align:center;
+        }
+
+        .receipt-sub{
+            text-align:center;
+            font-size:11px;
+            color:var(--muted);
+            margin-top:2px;
+            margin-bottom:14px;
+        }
+
+        .receipt hr{
+            border:none;
+            border-top:1.5px dashed var(--line);
+            margin:12px 0;
+        }
+
+        .r-row{
+            display:flex;
+            justify-content:space-between;
+            font-size:13px;
+            color:var(--ink);
+            padding:4px 0;
+        }
+
+        .r-row .k{ color:var(--muted); }
+        .r-row .v{ font-weight:600; }
+        .r-row .v.empty{ color:#B7BFCF; font-weight:500; }
+        .r-row .v.changed{ color:var(--blue-dark); }
+
+        .r-total{
+            display:flex;
+            justify-content:space-between;
+            font-size:15px;
+            font-weight:700;
+            color:var(--navy);
+            margin-top:6px;
+        }
+
+        .r-total .amt{ color:var(--blue-dark); }
+
+        .badge{
+            display:inline-block;
+            margin-top:14px;
+            padding:5px 10px;
+            border-radius:999px;
+            background:rgba(227,167,59,0.15);
+            color:#9A6B12;
+            font-size:10.5px;
+            font-weight:700;
+            letter-spacing:0.4px;
+            text-transform:uppercase;
+        }
+
+        .badge.clean{ background:rgba(101,112,138,0.12); color:var(--muted); }
+        .badge.dirty{ background:rgba(47,128,237,0.15); color:var(--blue-dark); }
+
+        .foot-note{
+            text-align:center;
+            font-size:10.5px;
+            color:#B7BFCF;
+            margin-top:16px;
+            letter-spacing:0.5px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="mark">H</div>
+    <div class="title">HisabGhor POS</div>
+    <div class="sub">Inventory · Edit Product</div>
+</div>
+
+<div class="shell">
+
+    <!-- ---------- Form ---------- -->
+    <div class="card">
+        <div class="card-head">
+            <span class="dot r"></span>
+            <span class="dot y"></span>
+            <span class="dot g"></span>
+            <span class="label">products/edit/1</span>
+        </div>
+
+        <form th:action="@{'/POS/edit/' + ${product.id}}" th:object="${product}" method="post">
+
+            <input type="hidden" th:field="*{id}" id="f-id">
+
+            <h2>Edit Product</h2>
+            <p class="lede">Updating <span class="id-chip" th:text="'ID #' + ${product.id}">ID #1</span></p>
+
+            <div class="field">
+                <label>Product Name</label>
+                <input type="text" th:field="*{name}" id="f-name" autocomplete="off">
+                <div class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+            </div>
+
+            <div class="field">
+                <label>Category</label>
+                <select th:field="*{category}" id="f-category">
+                    <option value="Burger">Burger</option>
+                    <option value="Drinks">Drinks</option>
+                    <option value="Fries">Fries</option>
+                    <option value="Coffee">Coffee</option>
+                    <option value="Snacks">Snacks</option>
+                </select>
+                <div class="error" th:if="${#fields.hasErrors('category')}" th:errors="*{category}"></div>
+            </div>
+
+            <div class="field">
+                <label>Price <span class="hint">Tk, per unit</span></label>
+                <input type="number" step="0.01" th:field="*{price}" id="f-price">
+                <div class="error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
+            </div>
+
+            <div class="field">
+                <label>Stock Quantity</label>
+                <input type="number" th:field="*{stock}" id="f-stock">
+                <div class="error" th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}"></div>
+            </div>
+
+            <div class="field">
+                <label>Date Updated</label>
+                <input type="date" th:field="*{date}" id="f-date">
+                <div class="error" th:if="${#fields.hasErrors('date')}" th:errors="*{date}"></div>
+            </div>
+
+            <button type="submit" class="btn">Update Product</button>
+        </form>
+
+        <a href="/POS/productList" class="back">← Back to Product List</a>
+    </div>
+
+    <!-- ---------- Live preview ---------- -->
+    <div class="receipt-wrap">
+        <div class="receipt">
+            <div class="receipt-title">HisabGhor POS</div>
+            <div class="receipt-sub">Edit Ticket</div>
+
+            <hr>
+
+            <div class="r-row"><span class="k">Item</span><span class="v" id="p-name">—</span></div>
+            <div class="r-row"><span class="k">Category</span><span class="v" id="p-category">—</span></div>
+            <div class="r-row"><span class="k">Stock</span><span class="v" id="p-stock">—</span></div>
+            <div class="r-row"><span class="k">Updated</span><span class="v empty" id="p-date">—</span></div>
+
+            <hr>
+
+            <div class="r-total"><span>Unit Price</span><span class="amt" id="p-price">Tk 0.00</span></div>
+
+            <div style="text-align:center;">
+                <span class="badge clean" id="p-badge">No changes yet</span>
+            </div>
+
+            <div class="foot-note">This is a live preview · not yet saved</div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const idEl = document.getElementById('f-id');
+    const nameEl = document.getElementById('f-name');
+    const catEl = document.getElementById('f-category');
+    const priceEl = document.getElementById('f-price');
+    const stockEl = document.getElementById('f-stock');
+    const dateEl = document.getElementById('f-date');
+
+    const pName = document.getElementById('p-name');
+    const pCat = document.getElementById('p-category');
+    const pStock = document.getElementById('p-stock');
+    const pDate = document.getElementById('p-date');
+    const pPrice = document.getElementById('p-price');
+    const pBadge = document.getElementById('p-badge');
+
+    // snapshot of the original values, to detect edits
+    const original = {
+        name: nameEl.value,
+        category: catEl.value,
+        price: priceEl.value,
+        stock: stockEl.value
+    };
+
+    function setVal(el, value, fallback, isChanged){
+        el.textContent = value ? value : fallback;
+        el.classList.toggle('empty', !value);
+        el.classList.toggle('changed', !!isChanged);
+    }
+
+    function formatDate(str){
+        if(!str) return '';
+        const d = new Date(str + 'T00:00:00');
+        if(isNaN(d)) return str;
+        return d.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+    }
+
+    function refresh(){
+        setVal(pName, nameEl.value.trim(), '—', nameEl.value !== original.name);
+        setVal(pCat, catEl.value, '—', catEl.value !== original.category);
+        setVal(pStock, stockEl.value ? (stockEl.value + ' units') : '', '—', stockEl.value !== original.stock);
+        setVal(pDate, formatDate(dateEl.value), '—', false);
+
+        const price = parseFloat(priceEl.value);
+        pPrice.textContent = 'Tk ' + (isNaN(price) ? '0.00' : price.toFixed(2));
+
+        const dirty = nameEl.value !== original.name ||
+            catEl.value !== original.category ||
+            priceEl.value !== original.price ||
+            stockEl.value !== original.stock;
+
+        pBadge.textContent = dirty ? 'Unsaved changes' : 'No changes yet';
+        pBadge.className = 'badge ' + (dirty ? 'dirty' : 'clean');
+    }
+
+    [nameEl, catEl, priceEl, stockEl, dateEl].forEach(el => {
+        el.addEventListener('input', refresh);
+        el.addEventListener('change', refresh);
+    });
+
+    dateEl.valueAsDate = new Date();
+    refresh();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expenses · HisabGhor POS</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+
+        :root{
+            --navy:#0B1D33;
+            --navy-2:#122744;
+            --paper:#F3F6FB;
+            --card:#FFFFFF;
+            --ink:#101828;
+            --muted:#65708A;
+            --line:#E3E8F2;
+            --amber:#E67E22;
+            --amber-dark:#C4640F;
+            --danger:#E0483E;
+            --danger-dark:#C8382F;
+            --gold:#E3A73B;
+            --radius:16px;
+            --mono:'JetBrains Mono', monospace;
+            --display:'Sora', sans-serif;
+            --body:'Inter', sans-serif;
+        }
+
+        *{ margin:0; padding:0; box-sizing:border-box; }
+
+        body{
+            font-family:var(--body);
+            background:
+                    radial-gradient(circle at 15% -10%, rgba(230,126,34,0.10), transparent 45%),
+                    radial-gradient(circle at 100% 0%, rgba(227,167,59,0.10), transparent 40%),
+                    var(--paper);
+            color:var(--ink);
+            min-height:100vh;
+        }
+
+        /* ---------- Top bar ---------- */
+        .navbar{
+            background:linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%);
+            color:#fff;
+            padding:16px 32px;
+            display:flex;
+            align-items:center;
+            gap:12px;
+            box-shadow:0 2px 18px rgba(11,29,51,0.25);
+        }
+
+        .navbar .mark{
+            width:34px; height:34px;
+            border-radius:9px;
+            background:linear-gradient(135deg, var(--amber), var(--amber-dark));
+            display:flex; align-items:center; justify-content:center;
+            font-family:var(--display); font-weight:800; font-size:16px;
+            box-shadow:inset 0 0 0 1px rgba(255,255,255,0.15);
+        }
+
+        .navbar .title{
+            font-family:var(--display);
+            font-weight:700;
+            font-size:19px;
+            letter-spacing:0.2px;
+        }
+
+        .navbar .sub{
+            font-size:12px;
+            color:rgba(255,255,255,0.55);
+            font-weight:500;
+            margin-left:auto;
+            letter-spacing:0.4px;
+            text-transform:uppercase;
+        }
+
+        /* ---------- Page shell ---------- */
+        .shell{
+            max-width:1000px;
+            margin:40px auto 60px;
+            padding:0 24px;
+        }
+
+        .top-grid{
+            display:grid;
+            grid-template-columns:1.1fr 0.9fr;
+            gap:28px;
+            align-items:start;
+            margin-bottom:32px;
+        }
+
+        @media (max-width:780px){
+            .top-grid{ grid-template-columns:1fr; }
+        }
+
+        /* ---------- Form card ---------- */
+        .card{
+            background:var(--card);
+            border-radius:var(--radius);
+            border:1px solid var(--line);
+            box-shadow:0 12px 30px -14px rgba(16,24,40,0.18);
+            overflow:hidden;
+        }
+
+        .card-head{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            padding:18px 26px;
+            border-bottom:1px solid var(--line);
+            background:linear-gradient(180deg, #FAFBFE, #FFFFFF);
+        }
+
+        .dot{ width:10px; height:10px; border-radius:50%; }
+        .dot.r{ background:#F04438; }
+        .dot.y{ background:#F5B94A; }
+        .dot.g{ background:#37C978; }
+
+        .card-head .label{
+            font-family:var(--mono);
+            font-size:12.5px;
+            color:var(--muted);
+            margin-left:8px;
+            letter-spacing:0.3px;
+        }
+
+        form{ padding:28px 28px 24px; }
+
+        h2{
+            font-family:var(--display);
+            font-size:20px;
+            font-weight:700;
+            color:var(--navy);
+            margin-bottom:4px;
+        }
+
+        .lede{
+            font-size:13px;
+            color:var(--muted);
+            margin-bottom:20px;
+        }
+
+        .field{ margin-top:16px; }
+
+        label{
+            display:flex;
+            justify-content:space-between;
+            font-size:12px;
+            font-weight:600;
+            color:var(--navy);
+            margin-bottom:6px;
+            letter-spacing:0.2px;
+            text-transform:uppercase;
+        }
+
+        label .hint{
+            font-weight:500;
+            color:var(--muted);
+            text-transform:none;
+            font-size:11.5px;
+        }
+
+        input{
+            width:100%;
+            padding:11px 13px;
+            border:1.5px solid var(--line);
+            border-radius:10px;
+            font-size:14.5px;
+            font-family:var(--body);
+            color:var(--ink);
+            background:#FCFDFF;
+            transition:border-color .15s ease, box-shadow .15s ease, background .15s ease;
+        }
+
+        input[name="amount"]{ font-family:var(--mono); }
+
+        textarea{
+            width:100%;
+            padding:11px 13px;
+            border:1.5px solid var(--line);
+            border-radius:10px;
+            font-size:14px;
+            font-family:var(--body);
+            color:var(--ink);
+            background:#FCFDFF;
+            resize:vertical;
+            min-height:72px;
+            line-height:1.5;
+            transition:border-color .15s ease, box-shadow .15s ease, background .15s ease;
+        }
+
+        textarea:hover{ border-color:#C9D3E4; }
+
+        textarea:focus{
+            outline:none;
+            border-color:var(--amber);
+            background:#fff;
+            box-shadow:0 0 0 4px rgba(230,126,34,0.14);
+        }
+
+        .char-count{
+            text-align:right;
+            font-size:11px;
+            color:var(--muted);
+            margin-top:4px;
+            font-family:var(--mono);
+        }
+
+        input:hover{ border-color:#C9D3E4; }
+
+        input:focus{
+            outline:none;
+            border-color:var(--amber);
+            background:#fff;
+            box-shadow:0 0 0 4px rgba(230,126,34,0.14);
+        }
+
+        .quick-tags{
+            display:flex;
+            flex-wrap:wrap;
+            gap:8px;
+            margin-top:8px;
+        }
+
+        .tag{
+            font-size:12px;
+            font-weight:600;
+            padding:5px 12px;
+            border-radius:999px;
+            border:1px solid var(--line);
+            background:#FAFBFE;
+            color:var(--muted);
+            cursor:pointer;
+            transition:all .12s ease;
+        }
+
+        .tag:hover{
+            border-color:var(--amber);
+            color:var(--amber-dark);
+            background:rgba(230,126,34,0.08);
+        }
+
+        .btn{
+            width:100%;
+            margin-top:24px;
+            padding:13px;
+            border:none;
+            border-radius:10px;
+            background:linear-gradient(135deg, var(--amber), var(--amber-dark));
+            color:white;
+            font-size:15px;
+            font-weight:700;
+            font-family:var(--display);
+            letter-spacing:0.3px;
+            cursor:pointer;
+            box-shadow:0 10px 20px -8px rgba(196,100,15,0.5);
+            transition:transform .12s ease, filter .12s ease;
+        }
+
+        .btn:hover{ transform:translateY(-1px); filter:brightness(1.04); }
+
+        /* ---------- Live preview ---------- */
+        .receipt-wrap{ position:sticky; top:24px; }
+
+        .receipt{
+            background:#fff;
+            border-radius:var(--radius);
+            box-shadow:0 14px 34px -16px rgba(16,24,40,0.22);
+            position:relative;
+            padding:26px 24px 20px;
+            font-family:var(--mono);
+        }
+
+        .receipt::before, .receipt::after{
+            content:"";
+            position:absolute;
+            left:0; right:0;
+            height:14px;
+            background:
+                    radial-gradient(circle at 8px 0, transparent 7px, #fff 7.5px) 0 0 / 16px 100% repeat-x;
+        }
+        .receipt::before{ top:-7px; transform:rotate(180deg); }
+        .receipt::after{ bottom:-7px; }
+
+        .receipt-title{
+            font-family:var(--display);
+            font-weight:700;
+            font-size:14px;
+            color:var(--navy);
+            text-transform:uppercase;
+            letter-spacing:1px;
+            text-align:center;
+        }
+
+        .receipt-sub{
+            text-align:center;
+            font-size:11px;
+            color:var(--muted);
+            margin-top:2px;
+            margin-bottom:14px;
+        }
+
+        .receipt hr{
+            border:none;
+            border-top:1.5px dashed var(--line);
+            margin:12px 0;
+        }
+
+        .r-row{
+            display:flex;
+            justify-content:space-between;
+            font-size:13px;
+            color:var(--ink);
+            padding:4px 0;
+        }
+
+        .r-row .k{ color:var(--muted); }
+        .r-row .v{ font-weight:600; }
+        .r-row .v.empty{ color:#B7BFCF; font-weight:500; }
+
+        .r-total{
+            display:flex;
+            justify-content:space-between;
+            font-size:16px;
+            font-weight:700;
+            color:var(--navy);
+            margin-top:6px;
+        }
+
+        .r-total .amt{ color:var(--amber-dark); }
+
+        .foot-note{
+            text-align:center;
+            font-size:10.5px;
+            color:#B7BFCF;
+            margin-top:16px;
+            letter-spacing:0.5px;
+        }
+
+        /* ---------- History ---------- */
+        .stats{
+            display:grid;
+            grid-template-columns:repeat(3, 1fr);
+            gap:16px;
+            margin-bottom:20px;
+        }
+
+        @media (max-width:600px){ .stats{ grid-template-columns:1fr; } }
+
+        .stat{
+            background:var(--card);
+            border:1px solid var(--line);
+            border-radius:14px;
+            padding:16px 18px;
+            box-shadow:0 8px 20px -14px rgba(16,24,40,0.25);
+        }
+
+        .stat .k{
+            font-size:11.5px;
+            color:var(--muted);
+            font-weight:600;
+            text-transform:uppercase;
+            letter-spacing:0.4px;
+        }
+
+        .stat .v{
+            font-family:var(--mono);
+            font-size:22px;
+            font-weight:600;
+            color:var(--amber-dark);
+            margin-top:6px;
+        }
+
+        .table-card{
+            background:var(--card);
+            border-radius:var(--radius);
+            border:1px solid var(--line);
+            box-shadow:0 12px 30px -14px rgba(16,24,40,0.18);
+            overflow:hidden;
+        }
+
+        .table-top{
+            display:flex;
+            align-items:center;
+            gap:14px;
+            padding:20px 24px 4px;
+            flex-wrap:wrap;
+        }
+
+        .table-top h2{ margin-right:auto; margin-bottom:0; text-align:left; }
+
+        .search{
+            position:relative;
+            flex:1;
+            min-width:180px;
+            max-width:280px;
+        }
+
+        .search input{
+            padding-left:34px;
+            background:#FCFDFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2365708A' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E") no-repeat 10px center;
+        }
+
+        .table-wrap{ padding:6px 24px 24px; overflow-x:auto; }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            min-width:560px;
+        }
+
+        th{
+            text-align:left;
+            padding:12px 14px;
+            font-size:11px;
+            font-weight:700;
+            text-transform:uppercase;
+            letter-spacing:0.5px;
+            color:var(--muted);
+            border-bottom:2px solid var(--line);
+        }
+
+        th.num, td.num{ text-align:right; }
+        th.center, td.center{ text-align:center; }
+
+        td{
+            padding:13px 14px;
+            font-size:14px;
+            border-bottom:1px solid var(--line);
+            color:var(--ink);
+        }
+
+        td.mono{ font-family:var(--mono); }
+        td.name{ font-weight:600; color:var(--navy); }
+
+        td.note{
+            max-width:200px;
+            overflow:hidden;
+            text-overflow:ellipsis;
+            white-space:nowrap;
+            color:var(--muted);
+            font-size:13px;
+            text-align:left;
+            cursor:help;
+        }
+
+        tbody tr{ transition:background .12s ease; }
+        tbody tr:hover{ background:#FFF9F2; }
+
+        .delete{
+            background:rgba(224,72,62,0.10);
+            color:var(--danger-dark);
+            padding:6px 14px;
+            border-radius:8px;
+            text-decoration:none;
+            font-size:13px;
+            font-weight:600;
+            transition:transform .12s ease, background .12s ease, color .12s ease;
+            display:inline-block;
+        }
+
+        .delete:hover{ background:var(--danger); color:#fff; transform:translateY(-1px); }
+
+        .back{
+            display:inline-flex;
+            align-items:center;
+            gap:6px;
+            margin-top:20px;
+            text-decoration:none;
+            background:var(--navy);
+            color:white;
+            padding:11px 20px;
+            border-radius:9px;
+            font-weight:600;
+            font-size:14px;
+            transition:transform .12s ease, filter .12s ease;
+        }
+
+        .back:hover{ filter:brightness(1.15); transform:translateY(-1px); }
+
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="mark">H</div>
+    <div class="title">HisabGhor POS</div>
+    <div class="sub">Expenses · New Entry</div>
+</div>
+
+<div class="shell">
+
+    <div class="top-grid">
+
+        <!-- ---------- Add expense form ---------- -->
+        <div class="card">
+            <div class="card-head">
+                <span class="dot r"></span>
+                <span class="dot y"></span>
+                <span class="dot g"></span>
+                <span class="label">expenses/new</span>
+            </div>
+
+            <form action="/expenses/save" method="post" id="expenseForm">
+                <h2>Add Expense</h2>
+                <p class="lede">Log a business expense — it'll show up in the ledger instantly.</p>
+
+                <div class="field">
+                    <label>Expense Title</label>
+                    <input type="text" name="title" id="f-title" placeholder="Example: Gas" autocomplete="off">
+                    <div class="quick-tags">
+                        <span class="tag" data-val="Gas">Gas</span>
+                        <span class="tag" data-val="Electricity Bill">Electricity Bill</span>
+                        <span class="tag" data-val="Staff Salary">Staff Salary</span>
+                        <span class="tag" data-val="Ingredients">Ingredients</span>
+                        <span class="tag" data-val="Rent">Rent</span>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Amount <span class="hint">Tk</span></label>
+                    <input type="number" step="0.01" name="amount" id="f-amount" placeholder="Enter amount">
+                </div>
+
+                <div class="field">
+                    <label>Note <span class="hint">optional</span></label>
+                    <textarea name="note" id="f-note" maxlength="200" placeholder="Add a short note about this expense… e.g. Paid to Rahim Traders for June gas cylinder"></textarea>
+                    <div class="char-count"><span id="noteCount">0</span>/200</div>
+                </div>
+
+                <div class="field">
+                    <label>Expense Date</label>
+                    <input type="date" name="expenseDate" id="f-date">
+                </div>
+
+                <button class="btn" type="submit">Save Expense</button>
+            </form>
+        </div>
+
+        <!-- ---------- Live preview ---------- -->
+        <div class="receipt-wrap">
+            <div class="receipt">
+                <div class="receipt-title">HisabGhor POS</div>
+                <div class="receipt-sub">Expense Voucher</div>
+
+                <hr>
+
+                <div class="r-row"><span class="k">Title</span><span class="v empty" id="p-title">—</span></div>
+                <div class="r-row"><span class="k">Date</span><span class="v empty" id="p-date">—</span></div>
+
+                <hr>
+
+                <div class="r-total"><span>Amount</span><span class="amt" id="p-amount">৳ 0.00</span></div>
+
+                <div id="p-note-wrap" style="display:none; margin-top:12px;">
+                    <div style="font-size:11px; color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.4px;">Note</div>
+                    <div style="font-size:12.5px; color:var(--ink); line-height:1.5; word-break:break-word;" id="p-note"></div>
+                </div>
+
+                <div class="foot-note">Preview only · not yet saved</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ---------- Expense history ---------- -->
+    <div class="stats">
+        <div class="stat">
+            <div class="k">Total Entries</div>
+            <div class="v" id="stat-count">0</div>
+        </div>
+        <div class="stat">
+            <div class="k">Highest Expense</div>
+            <div class="v" id="stat-max">৳ 0</div>
+        </div>
+        <div class="stat">
+            <div class="k">Total Spent</div>
+            <div class="v" id="stat-total">৳ 0</div>
+        </div>
+    </div>
+
+    <div class="table-card">
+        <div class="table-top">
+            <h2>Expense History</h2>
+            <div class="search">
+                <input type="text" id="searchBox" placeholder="Search by title…">
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table id="expenseTable">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th class="num">Amount (Tk)</th>
+                    <th class="center">Date</th>
+                    <th>Note</th>
+                    <th class="center">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- sample rows — replace with th:each="expense : ${expenses}" loop when wiring back to Thymeleaf -->
+                <tr data-title="gas">
+                    <td class="mono">1</td>
+                    <td class="name">Gas</td>
+                    <td class="num mono">1200.00</td>
+                    <td class="center mono">20 Jul 2026</td>
+                    <td class="note" title="Refilled 2 gas cylinders for kitchen">Refilled 2 gas cylinders for kitchen</td>
+                    <td class="center">
+                        <a class="delete" href="/expenses/delete/1" onclick="return confirm('Delete this expense?')">Delete</a>
+                    </td>
+                </tr>
+                <tr data-title="electricity bill">
+                    <td class="mono">2</td>
+                    <td class="name">Electricity Bill</td>
+                    <td class="num mono">3400.00</td>
+                    <td class="center mono">22 Jul 2026</td>
+                    <td class="note" title="June month DESCO bill">June month DESCO bill</td>
+                    <td class="center">
+                        <a class="delete" href="/expenses/delete/2" onclick="return confirm('Delete this expense?')">Delete</a>
+                    </td>
+                </tr>
+                <tr data-title="ingredients">
+                    <td class="mono">3</td>
+                    <td class="name">Ingredients</td>
+                    <td class="num mono">5600.00</td>
+                    <td class="center mono">24 Jul 2026</td>
+                    <td class="note" title="Chicken, buns and vegetables from local market">Chicken, buns and vegetables from local market</td>
+                    <td class="center">
+                        <a class="delete" href="/expenses/delete/3" onclick="return confirm('Delete this expense?')">Delete</a>
+                    </td>
+                </tr>
+                <tr data-title="staff salary">
+                    <td class="mono">4</td>
+                    <td class="name">Staff Salary</td>
+                    <td class="num mono">15000.00</td>
+                    <td class="center mono">25 Jul 2026</td>
+                    <td class="note" title="Monthly salary — Karim (kitchen staff)">Monthly salary — Karim (kitchen staff)</td>
+                    <td class="center">
+                        <a class="delete" href="/expenses/delete/4" onclick="return confirm('Delete this expense?')">Delete</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <a class="back" href="/">← Dashboard</a>
+
+</div>
+
+<script>
+    const titleEl = document.getElementById('f-title');
+    const amountEl = document.getElementById('f-amount');
+    const noteEl = document.getElementById('f-note');
+    const dateEl = document.getElementById('f-date');
+    const noteCount = document.getElementById('noteCount');
+
+    const pTitle = document.getElementById('p-title');
+    const pDate = document.getElementById('p-date');
+    const pAmount = document.getElementById('p-amount');
+    const pNoteWrap = document.getElementById('p-note-wrap');
+    const pNote = document.getElementById('p-note');
+
+    function formatDate(str){
+        if(!str) return '';
+        const d = new Date(str + 'T00:00:00');
+        if(isNaN(d)) return str;
+        return d.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+    }
+
+    function refresh(){
+        pTitle.textContent = titleEl.value.trim() || '—';
+        pTitle.classList.toggle('empty', !titleEl.value.trim());
+
+        pDate.textContent = formatDate(dateEl.value) || '—';
+        pDate.classList.toggle('empty', !dateEl.value);
+
+        const amt = parseFloat(amountEl.value);
+        pAmount.textContent = '৳ ' + (isNaN(amt) ? '0.00' : amt.toFixed(2));
+
+        const noteVal = noteEl.value.trim();
+        noteCount.textContent = noteEl.value.length;
+        if(noteVal){
+            pNote.textContent = noteVal;
+            pNoteWrap.style.display = 'block';
+        } else {
+            pNoteWrap.style.display = 'none';
+        }
+    }
+
+    [titleEl, amountEl, noteEl, dateEl].forEach(el => {
+        el.addEventListener('input', refresh);
+        el.addEventListener('change', refresh);
+    });
+
+    document.querySelectorAll('.tag').forEach(tag => {
+        tag.addEventListener('click', () => {
+            titleEl.value = tag.dataset.val;
+            refresh();
+            titleEl.focus();
+        });
+    });
+
+    dateEl.valueAsDate = new Date();
+    refresh();
+
+    // ---------- search filter ----------
+    const searchBox = document.getElementById('searchBox');
+    const rows = Array.from(document.querySelectorAll('#expenseTable tbody tr'));
+
+    searchBox.addEventListener('input', () => {
+        const q = searchBox.value.trim().toLowerCase();
+        rows.forEach(row => {
+            row.style.display = row.dataset.title.includes(q) ? '' : 'none';
+        });
+    });
+
+    // ---------- history stats, computed from the table ----------
+    let total = 0, max = 0;
+    rows.forEach(row => {
+        const amt = parseFloat(row.querySelectorAll('td')[2].textContent) || 0;
+        total += amt;
+        if(amt > max) max = amt;
+    });
+    document.getElementById('stat-count').textContent = rows.length;
+    document.getElementById('stat-total').textContent = '৳ ' + total.toLocaleString('en-IN');
+    document.getElementById('stat-max').textContent = '৳ ' + max.toLocaleString('en-IN');
+</script>
+
+</body>
+</html>
