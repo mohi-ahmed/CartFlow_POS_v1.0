@@ -1,7 +1,8 @@
 package com.sparktech.cart_pos_v1_0.Controller;
 
 
-import com.sparktech.cart_pos_v1_0.Interface.ProductInterface;
+import com.sparktech.cart_pos_v1_0.DTO.RemovedProductStatsDto;
+import com.sparktech.cart_pos_v1_0.Repositories.ProductRepository;
 import com.sparktech.cart_pos_v1_0.Product;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
