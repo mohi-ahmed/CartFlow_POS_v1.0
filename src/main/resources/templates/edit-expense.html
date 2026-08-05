@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Expense · HisabGhor POS</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+
+        :root{
+            --navy:#0B1D33;
+            --navy-2:#122744;
+            --paper:#F3F6FB;
+            --card:#FFFFFF;
+            --ink:#101828;
+            --muted:#65708A;
+            --line:#E3E8F2;
+            --amber:#E67E22;
+            --amber-dark:#C4640F;
+            --danger:#E0483E;
+            --radius:16px;
+            --mono:'JetBrains Mono', monospace;
+            --display:'Sora', sans-serif;
+            --body:'Inter', sans-serif;
+        }
+
+        *{ margin:0; padding:0; box-sizing:border-box; }
+
+        body{
+            font-family:var(--body), sans-serif;
+            background:
+                    radial-gradient(circle at 15% -10%, rgba(230,126,34,0.10), transparent 45%),
+                    radial-gradient(circle at 100% 0%, rgba(227,167,59,0.10), transparent 40%),
+                    var(--paper);
+            color:var(--ink);
+            min-height:100vh;
+        }
+
+        .navbar{
+            background:linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%);
+            color:#fff;
+            padding:16px 32px;
+            display:flex;
+            align-items:center;
+            gap:12px;
+            box-shadow:0 2px 18px rgba(11,29,51,0.25);
+        }
+
+        .navbar .mark{
+            width:34px; height:34px;
+            border-radius:9px;
+            background:linear-gradient(135deg, var(--amber), var(--amber-dark));
+            display:flex; align-items:center; justify-content:center;
+            font-family:var(--display), sans-serif; font-weight:800; font-size:16px;
+            box-shadow:inset 0 0 0 1px rgba(255,255,255,0.15);
+        }
+
+        .navbar .title{
+            font-family:var(--display), sans-serif;
+            font-weight:700;
+            font-size:19px;
+            letter-spacing:0.2px;
+        }
+
+        .navbar .sub{
+            font-size:12px;
+            color:rgba(255,255,255,0.55);
+            font-weight:500;
+            margin-left:auto;
+            letter-spacing:0.4px;
+            text-transform:uppercase;
+        }
+
+        .shell{
+            max-width:640px;
+            margin:48px auto;
+            padding:0 24px;
+        }
+
+        .card{
+            background:var(--card);
+            border-radius:var(--radius);
+            border:1px solid var(--line);
+            box-shadow:0 12px 30px -14px rgba(16,24,40,0.18);
+            overflow:hidden;
+        }
+
+        .card-head{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            padding:18px 26px;
+            border-bottom:1px solid var(--line);
+            background:linear-gradient(180deg, #FAFBFE, #FFFFFF);
+        }
+
+        .dot{ width:10px; height:10px; border-radius:50%; }
+        .dot.r{ background:#F04438; }
+        .dot.y{ background:#F5B94A; }
+        .dot.g{ background:#37C978; }
+
+        .card-head .label{
+            font-family:var(--mono), monospace;
+            font-size:12.5px;
+            color:var(--muted);
+            margin-left:8px;
+            letter-spacing:0.3px;
+        }
+
+        form{ padding:30px 30px 26px; }
+
+        h2{
+            font-family:var(--display), sans-serif;
+            font-size:22px;
+            font-weight:700;
+            color:var(--navy);
+            margin-bottom:4px;
+        }
+
+        .lede{
+            font-size:13.5px;
+            color:var(--muted);
+            margin-bottom:22px;
+        }
+
+        .field{ margin-top:18px; }
+
+        .field-row{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:16px;
+        }
+
+        @media (max-width:520px){ .field-row{ grid-template-columns:1fr; } }
+
+        label{
+            display:flex;
+            justify-content:space-between;
+            font-size:12.5px;
+            font-weight:600;
+            color:var(--navy);
+            margin-bottom:7px;
+            letter-spacing:0.2px;
+            text-transform:uppercase;
+        }
+
+        label .hint{
+            font-weight:500;
+            color:var(--muted);
+            text-transform:none;
+            font-size:12px;
+        }
+
+        input, select, textarea{
+            width:100%;
+            padding:12px 14px;
+            border:1.5px solid var(--line);
+            border-radius:10px;
+            font-size:15px;
+            font-family:var(--body), sans-serif;
+            color:var(--ink);
+            background:#FCFDFF;
+            transition:border-color .15s ease, box-shadow .15s ease, background .15s ease;
+        }
+
+        input[name="amount"]{ font-family:var(--mono), monospace; }
+
+        textarea{
+            resize:vertical;
+            min-height:80px;
+            line-height:1.5;
+        }
+
+        select{
+            appearance:none;
+            background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%2365708A' stroke-width='2' fill='none' fill-rule='evenodd'/%3E%3C/svg%3E");
+            background-repeat:no-repeat;
+            background-position:right 16px center;
+            padding-right:38px;
+        }
+
+        input:hover, select:hover, textarea:hover{ border-color:#C9D3E4; }
+
+        input:focus, select:focus, textarea:focus{
+            outline:none;
+            border-color:var(--amber);
+            background:#fff;
+            box-shadow:0 0 0 4px rgba(230,126,34,0.14);
+        }
+
+        .error{
+            color:var(--danger);
+            font-size:12.5px;
+            margin-top:5px;
+            font-weight:500;
+        }
+
+        .btn{
+            width:100%;
+            margin-top:28px;
+            padding:14px;
+            border:none;
+            border-radius:10px;
+            background:linear-gradient(135deg, var(--amber), var(--amber-dark));
+            color:white;
+            font-size:15.5px;
+            font-weight:700;
+            font-family:var(--display), sans-serif;
+            letter-spacing:0.3px;
+            cursor:pointer;
+            box-shadow:0 10px 20px -8px rgba(196,100,15,0.5);
+            transition:transform .12s ease, filter .12s ease;
+        }
+
+        .btn:hover{ transform:translateY(-1px); filter:brightness(1.04); }
+
+        .back{
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:6px;
+            margin-top:16px;
+            text-decoration:none;
+            color:var(--muted);
+            font-weight:600;
+            font-size:13.5px;
+            transition:color .15s ease;
+        }
+        .back:hover{ color:var(--navy); }
+
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="mark">H</div>
+    <div class="title">HisabGhor POS</div>
+    <div class="sub">Expenses · Edit Entry</div>
+</div>
+
+<div class="shell">
+
+    <div class="card">
+        <div class="card-head">
+            <span class="dot r"></span>
+            <span class="dot y"></span>
+            <span class="dot g"></span>
+            <span class="label">expenses/edit</span>
+        </div>
+
+        <form th:action="@{/update/{id}(id=${expense.id})}" th:object="${expense}" method="post">
+
+            <h2>Edit Expense</h2>
+            <p class="lede">Update the details of this expense entry.</p>
+
+            <div class="field-row">
+                <div class="field">
+                    <label>Expense Title</label>
+                    <input type="text" th:field="*{title}" placeholder="Example: Gas Cylinder Refill" autocomplete="off">
+                    <div class="error" th:errors="*{title}"></div>
+                </div>
+
+                <div class="field">
+                    <label>Category</label>
+                    <select th:field="*{category}">
+                        <option value="">Select Category</option>
+                        <option value="Utilities">Utilities</option>
+                        <option value="Salary">Staff Salary</option>
+                        <option value="Ingredients">Ingredients</option>
+                        <option value="Rent">Rent</option>
+                        <option value="Maintenance">Maintenance</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <div class="error" th:errors="*{category}"></div>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <div class="field">
+                    <label>Amount <span class="hint">Tk</span></label>
+                    <input type="number" step="0.01" th:field="*{amount}" placeholder="Enter amount">
+                    <div class="error" th:errors="*{amount}"></div>
+                </div>
+
+                <div class="field">
+                    <label>Expense Date</label>
+                    <input type="date" th:field="*{expenseDate}">
+                    <div class="error" th:errors="*{expenseDate}"></div>
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Note <span class="hint">optional, max 200 characters</span></label>
+                <textarea th:field="*{note}" maxlength="200" placeholder="Add a short note about this expense…"></textarea>
+                <div class="error" th:errors="*{note}"></div>
+            </div>
+
+            <button class="btn" type="submit">Update Expense</button>
+        </form>
+
+        <a href="/expenses" class="back">← Cancel and back to Expense List</a>
+    </div>
+
+</div>
+
+</body>
+</html>

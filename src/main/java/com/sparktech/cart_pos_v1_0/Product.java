@@ -1,10 +1,7 @@
 package com.sparktech.cart_pos_v1_0;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -14,11 +11,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+//@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"name","category"}))
 public class Product {
 
     @Id
@@ -41,4 +40,8 @@ public class Product {
 
     @NotNull(message = "Date is required")
     private LocalDate date;
+
+    private boolean active = true;
+
+    private LocalDateTime deactivatedAt;
 }

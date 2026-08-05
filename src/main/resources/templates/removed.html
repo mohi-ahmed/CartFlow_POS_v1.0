@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Products · HisabGhor POS</title>
+    <title>Removed Products · HisabGhor POS</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -18,12 +18,12 @@
             --ink:#101828;
             --muted:#65708A;
             --line:#E3E8F2;
+            --slate:#5B6B8C;
+            --slate-dark:#455577;
             --emerald:#0E9F6E;
             --emerald-dark:#0B8059;
             --gold:#E3A73B;
             --danger:#E0483E;
-            --danger-dark:#C8382F;
-            --blue:#2F80ED;
             --radius:16px;
             --mono:'JetBrains Mono', monospace;
             --display:'Sora', sans-serif;
@@ -35,8 +35,8 @@
         body{
             font-family:var(--body);
             background:
-                    radial-gradient(circle at 15% -10%, rgba(14,159,110,0.10), transparent 45%),
-                    radial-gradient(circle at 100% 0%, rgba(227,167,59,0.10), transparent 40%),
+                    radial-gradient(circle at 15% -10%, rgba(91,107,140,0.10), transparent 45%),
+                    radial-gradient(circle at 100% 0%, rgba(227,167,59,0.08), transparent 40%),
                     var(--paper);
             color:var(--ink);
             min-height:100vh;
@@ -56,7 +56,7 @@
         .navbar .mark{
             width:34px; height:34px;
             border-radius:9px;
-            background:linear-gradient(135deg, var(--emerald), var(--emerald-dark));
+            background:linear-gradient(135deg, var(--slate), var(--slate-dark));
             display:flex; align-items:center; justify-content:center;
             font-family:var(--display); font-weight:800; font-size:16px;
             box-shadow:inset 0 0 0 1px rgba(255,255,255,0.15);
@@ -80,7 +80,7 @@
 
         /* ---------- Page shell ---------- */
         .shell{
-            max-width:1160px;
+            max-width:1080px;
             margin:40px auto 60px;
             padding:0 24px;
         }
@@ -93,11 +93,13 @@
             font-weight:600;
             margin-bottom:20px;
         }
+
         .flash.success{
             background:rgba(14,159,110,0.10);
             color:var(--emerald-dark);
             border:1px solid rgba(14,159,110,0.25);
         }
+
         .flash.error{
             background:rgba(224,72,62,0.10);
             color:var(--danger);
@@ -107,12 +109,12 @@
         /* ---------- Stat strip ---------- */
         .stats{
             display:grid;
-            grid-template-columns:repeat(4, 1fr);
+            grid-template-columns:repeat(3, 1fr);
             gap:16px;
             margin-bottom:24px;
         }
 
-        @media (max-width:760px){ .stats{ grid-template-columns:repeat(2,1fr); } }
+        @media (max-width:640px){ .stats{ grid-template-columns:1fr; } }
 
         .stat{
             background:var(--card);
@@ -134,12 +136,9 @@
             font-family:var(--mono);
             font-size:22px;
             font-weight:600;
-            color:var(--navy);
+            color:var(--slate-dark);
             margin-top:6px;
         }
-
-        .stat .v.warn{ color:var(--gold); }
-        .stat .v.danger{ color:var(--danger); }
 
         /* ---------- Card ---------- */
         .card{
@@ -153,11 +152,10 @@
         .card-head{
             display:flex;
             align-items:center;
-            gap:14px;
+            gap:10px;
             padding:18px 24px;
             border-bottom:1px solid var(--line);
             background:linear-gradient(180deg, #FAFBFE, #FFFFFF);
-            flex-wrap:wrap;
         }
 
         .dot{ width:10px; height:10px; border-radius:50%; }
@@ -169,13 +167,13 @@
             font-family:var(--mono);
             font-size:12.5px;
             color:var(--muted);
-            margin-right:auto;
+            margin-left:8px;
             letter-spacing:0.3px;
         }
 
-        .top-actions{
+        .toolbar{
             display:flex;
-            align-items:center;
+            align-items:flex-end;
             gap:12px;
             padding:20px 24px 4px;
             flex-wrap:wrap;
@@ -183,52 +181,83 @@
 
         h2{
             font-family:var(--display);
-            font-size:20px;
+            font-size:19px;
             font-weight:700;
             color:var(--navy);
             margin-right:auto;
+            align-self:center;
         }
 
-        .search{
+        .field-inline{ display:flex; flex-direction:column; gap:5px; }
+
+        .field-inline label{
+            font-size:10.5px;
+            font-weight:700;
+            color:var(--muted);
+            text-transform:uppercase;
+            letter-spacing:0.4px;
+        }
+
+        .search, .date-input{
             position:relative;
-            flex:1;
-            min-width:200px;
-            max-width:320px;
         }
 
-        .search input{
-            width:100%;
-            padding:10px 14px 10px 34px;
+        .search input, .date-input input{
+            padding:10px 14px;
             border:1.5px solid var(--line);
             border-radius:9px;
-            font-size:14px;
+            font-size:13.5px;
             font-family:var(--body);
-            background:#FCFDFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2365708A' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E") no-repeat 10px center;
+            background:#FCFDFF;
             transition:border-color .15s ease, box-shadow .15s ease;
         }
 
-        .search input:focus{
+        .search{ flex:1; min-width:190px; max-width:260px; }
+
+        .search input{
+            width:100%;
+            padding-left:34px;
+            background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2365708A' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");
+            background-repeat:no-repeat;
+            background-position:10px center;
+        }
+
+        .date-input input{ width:150px; font-family:var(--mono); }
+
+        .search input:focus, .date-input input:focus{
             outline:none;
-            border-color:var(--emerald);
-            box-shadow:0 0 0 4px rgba(14,159,110,0.14);
+            border-color:var(--slate);
+            box-shadow:0 0 0 4px rgba(91,107,140,0.14);
         }
 
-        .btn{
-            text-decoration:none;
-            background:linear-gradient(135deg, var(--emerald), var(--emerald-dark));
-            color:white;
-            padding:10px 20px;
+        .search-btn{
+            padding:10px 18px;
+            border:none;
             border-radius:9px;
-            font-weight:700;
-            font-size:14px;
-            font-family:var(--display);
-            letter-spacing:0.2px;
-            box-shadow:0 10px 20px -10px rgba(11,128,89,0.55);
-            transition:transform .12s ease, filter .12s ease;
-            white-space:nowrap;
+            background:var(--slate-dark);
+            color:#fff;
+            font-size:13.5px;
+            font-weight:600;
+            cursor:pointer;
+            transition:filter .12s ease, transform .12s ease;
         }
 
-        .btn:hover{ transform:translateY(-1px); filter:brightness(1.04); }
+        .search-btn:hover{ filter:brightness(1.1); transform:translateY(-1px); }
+
+        .clear-btn{
+            padding:10px 14px;
+            border:1.5px solid var(--line);
+            border-radius:9px;
+            background:#FCFDFF;
+            color:var(--muted);
+            font-size:13px;
+            font-weight:600;
+            text-decoration:none;
+            display:inline-block;
+            transition:all .12s ease;
+        }
+
+        .clear-btn:hover{ border-color:var(--slate); color:var(--slate-dark); }
 
         /* ---------- Table ---------- */
         .table-wrap{ padding:6px 24px 24px; overflow-x:auto; }
@@ -236,37 +265,34 @@
         table{
             width:100%;
             border-collapse:collapse;
-            min-width:720px;
+            min-width:640px;
         }
 
         th{
             text-align:left;
             padding:12px 14px;
-            font-size:11.5px;
+            font-size:11px;
             font-weight:700;
             text-transform:uppercase;
             letter-spacing:0.5px;
             color:var(--muted);
             border-bottom:2px solid var(--line);
-            cursor:default;
-            user-select:none;
         }
 
-        th.num, td.num{ text-align:right; }
         th.center, td.center{ text-align:center; }
 
         td{
-            padding:14px;
-            font-size:14.5px;
+            padding:13px 14px;
+            font-size:14px;
             border-bottom:1px solid var(--line);
             color:var(--ink);
         }
 
+        td.mono{ font-family:var(--mono); color:var(--muted); }
         td.name{ font-weight:600; color:var(--navy); }
-        td.mono{ font-family:var(--mono); }
 
         tbody tr{ transition:background .12s ease; }
-        tbody tr:hover{ background:#F6FAF8; }
+        tbody tr:hover{ background:#F7F8FC; }
 
         .cat-pill{
             display:inline-block;
@@ -274,57 +300,53 @@
             border-radius:999px;
             font-size:12px;
             font-weight:600;
-            background:rgba(47,128,237,0.10);
-            color:var(--blue);
+            background:rgba(91,107,140,0.10);
+            color:var(--slate-dark);
         }
 
-        .stock-pill{
-            display:inline-flex;
-            align-items:center;
-            gap:6px;
-            padding:4px 10px;
-            border-radius:999px;
-            font-size:12px;
-            font-weight:700;
-            font-family:var(--mono);
+        .removed-on{
+            display:flex;
+            flex-direction:column;
+            gap:1px;
         }
 
-        .stock-pill.ok{ background:rgba(14,159,110,0.12); color:var(--emerald-dark); }
-        .stock-pill.low{ background:rgba(227,167,59,0.15); color:#9A6B12; }
-        .stock-pill.out{ background:rgba(224,72,62,0.12); color:var(--danger-dark); }
+        .removed-on .date{ font-family:var(--mono); font-weight:600; font-size:13px; }
+        .removed-on .time{ font-size:11.5px; color:var(--muted); font-family:var(--mono); }
 
-        .dot-ind{ width:6px; height:6px; border-radius:50%; background:currentColor; }
-
-        .actions{ display:flex; gap:8px; justify-content:center; }
-
-        .edit, .delete{
-            text-decoration:none;
-            padding:7px 14px;
+        .restore{
+            background:rgba(14,159,110,0.10);
+            color:var(--emerald-dark);
+            padding:6px 14px;
             border-radius:8px;
+            text-decoration:none;
             font-size:13px;
             font-weight:600;
-            transition:transform .12s ease, filter .12s ease;
+            transition:transform .12s ease, background .12s ease, color .12s ease;
             display:inline-block;
         }
 
-        .edit{ background:rgba(47,128,237,0.12); color:var(--blue); }
-        .edit:hover{ background:var(--blue); color:#fff; transform:translateY(-1px); }
+        .restore:hover{ background:var(--emerald); color:#fff; transform:translateY(-1px); }
 
-        .delete{ background:rgba(224,72,62,0.10); color:var(--danger-dark); border:none; cursor:pointer; }
-        .delete:hover{ background:var(--danger); color:#fff; transform:translateY(-1px); }
-
-        .empty-row td{
+        .empty-state{
             text-align:center;
-            padding:36px 12px;
+            padding:48px 20px;
             color:var(--muted);
             font-size:14px;
         }
 
+        .empty-state .big{
+            font-family:var(--display);
+            font-size:16px;
+            font-weight:700;
+            color:var(--navy);
+            margin-bottom:6px;
+        }
+
         .back{
-            margin-top:20px;
             display:inline-flex;
             align-items:center;
             gap:6px;
+            margin-top:20px;
             text-decoration:none;
             background:var(--navy);
             color:white;
@@ -344,100 +366,110 @@
 <div class="navbar">
     <div class="mark">H</div>
     <div class="title">HisabGhor POS</div>
-    <div class="sub">Inventory · Products</div>
+    <div class="sub">Inventory · Removed Products</div>
 </div>
 
 <div class="shell">
 
-    <!-- ---------- Flash messages ---------- -->
+    <!-- ---------- Flash messages (after restore action) ---------- -->
     <div class="flash success" th:if="${success}" th:text="${success}"></div>
     <div class="flash error" th:if="${error}" th:text="${error}"></div>
 
-    <!-- ---------- Summary stats ---------- -->
-
+    <!-- ---------- Stats (calculated in Controller, no JS) ---------- -->
     <div class="stats">
         <div class="stat">
-            <div class="k">Total Products</div>
-            <div class="v" th:text="${totalCount}">0</div>
+            <div class="k">Total Removed</div>
+            <div class="v" th:text="${stats.totalRemoved}">0</div>
         </div>
         <div class="stat">
-            <div class="k">In Stock</div>
-            <div class="v" th:text="${inStockCount}">0</div>
+            <div class="k">Removed This Month</div>
+            <div class="v" th:text="${stats.removedThisMonth}">0</div>
         </div>
         <div class="stat">
-            <div class="k">Low Stock</div>
-            <div class="v warn" th:text="${lowStockCount}">0</div>
-        </div>
-        <div class="stat">
-            <div class="k">Out of Stock</div>
-            <div class="v danger" th:text="${outOfStockCount}">0</div>
+            <div class="k">Most Recent</div>
+            <div class="v" style="font-size:15px;" th:text="${stats.mostRecentName}">—</div>
         </div>
     </div>
 
-    <!-- ---------- Product table card ---------- -->
     <div class="card">
-
         <div class="card-head">
             <span class="dot r"></span>
             <span class="dot y"></span>
             <span class="dot g"></span>
-            <span class="label">products/all</span>
+            <span class="label">products/removed</span>
         </div>
 
-        <div class="top-actions">
-            <h2>All Products</h2>
+        <!-- ---------- Search + Date filter form (server-side GET, no JS) ---------- -->
+        <form method="get" th:action="@{/POS/removed-products}">
+            <div class="toolbar">
+                <h2>Removed Products</h2>
 
-            <form th:action="@{/POS/productList}" method="get" class="search">
-                <input type="text" name="keyword" th:value="${keyword}" placeholder="Search by name or category…">
-            </form>
+                <div class="field-inline">
+                    <label>Search</label>
+                    <div class="search">
+                        <input type="text" name="keyword" th:value="${keyword}"
+                               placeholder="Search by name or category…">
+                    </div>
+                </div>
 
-            <a href="/POS/add" class="btn">+ Add Product</a>
-            <a th:href="@{/POS/removed-products}" class="btn" style="background:linear-gradient(135deg, #5B6B8C, #455577); box-shadow:0 10px 20px -10px rgba(69,85,119,0.55);">
-                🗑 Removed Products
-            </a>
-        </div>
+                <div class="field-inline">
+                    <label>From</label>
+                    <div class="date-input">
+                        <input type="date" name="dateFrom" th:value="${dateFrom}">
+                    </div>
+                </div>
+
+                <div class="field-inline">
+                    <label>To</label>
+                    <div class="date-input">
+                        <input type="date" name="dateTo" th:value="${dateTo}">
+                    </div>
+                </div>
+
+                <button type="submit" class="search-btn">Search</button>
+                <a th:href="@{/POS/removed-products}" class="clear-btn">Clear</a>
+            </div>
+        </form>
 
         <div class="table-wrap">
-            <p th:if="${p.isEmpty()}">No Products available</p>
-            <table id="productTable" th:unless="${p.isEmpty()}">
+
+            <table id="removedTable" th:if="${!removedProducts.isEmpty()}">
                 <thead>
                 <tr>
                     <th>ID</th>
                     <th>Name</th>
                     <th>Category</th>
-                    <th class="num">Price (Tk)</th>
-                    <th class="center">Stock</th>
-                    <th class="center">Date Added</th>
+                    <th>Removed On</th>
                     <th class="center">Action</th>
                 </tr>
                 </thead>
-
                 <tbody>
-                <tr th:each="i : ${p}">
-                    <td class="mono" th:text="${i.id}"></td>
-                    <td class="name" th:text="${i.name}"></td>
-                    <td><span class="cat-pill" th:text="${i.category}"></span></td>
-                    <td class="num mono" th:text="${i.price}"></td>
-                    <td class="center" th:text="${i.stock}"></td>
-                    <td class="center mono" th:text="${i.date}"></td>
+                <tr th:each="p : ${removedProducts}">
+                    <td class="mono" th:text="${p.id}"></td>
+                    <td class="name" th:text="${p.name}"></td>
+                    <td><span class="cat-pill" th:text="${p.category}"></span></td>
                     <td>
-                        <div class="actions">
-                            <a class="edit" th:href="@{'/POS/edit/' + ${i.id}}">Edit</a>
-
-                            <form th:action="@{/POS/delete/{id}(id=${i.id})}" method="post" style="display:inline;"
-                                  onsubmit="return confirm('Delete this product?')">
-                                <button type="submit" class="delete">Delete</button>
-                            </form>
+                        <div class="removed-on">
+                            <span class="date" th:text="${#temporals.format(p.deactivatedAt, 'dd MMM yyyy')}"></span>
+                            <span class="time" th:text="${#temporals.format(p.deactivatedAt, 'hh:mm a')}"></span>
                         </div>
+                    </td>
+                    <td class="center">
+                        <a class="restore" th:href="@{'/POS/restore/' + ${p.id}}">Restore</a>
                     </td>
                 </tr>
                 </tbody>
             </table>
-        </div>
 
+            <div class="empty-state" th:if="${removedProducts.isEmpty()}">
+                <div class="big">No matching records</div>
+                Try adjusting your search or date range.
+            </div>
+
+        </div>
     </div>
 
-    <a class="back" href="/">← Back to Dashboard</a>
+    <a class="back" th:href="@{/POS/productList}">← Back to Product List</a>
 
 </div>
 

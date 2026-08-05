@@ -349,7 +349,11 @@
 
             <div class="field">
                 <label>Product Name</label>
-                <input type="text" name="name" th:field="*{name}" id="f-name" placeholder="e.g. Beef Zinger Burger" autocomplete="off">
+                <input type="text" name="name" th:field="*{name}" id="f-name"
+                       placeholder="e.g. Beef Zinger Burger" autocomplete="off" list="name-suggestions">
+                <datalist id="name-suggestions">
+                    <option th:each="pname : ${allProductsNames}" th:value="${pname}"></option>
+                </datalist>
                 <div class="error" th:errors="*{name}"></div>
             </div>
 
@@ -381,7 +385,6 @@
             <div class="field">
                 <label>Date Added</label>
                 <input type="date" name="date" th:field="*{date}" id="f-date">
-                <!--                <span class="error" th:errors="*{data}"></span>-->
             </div>
 
             <button type="submit" class="btn">Save Product</button>
