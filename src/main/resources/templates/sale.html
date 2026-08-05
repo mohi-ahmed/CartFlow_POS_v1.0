@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sale · HisabGhor POS</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+
+        :root{
+            --navy:#0B1D33;
+            --navy-2:#122744;
+            --paper:#F3F6FB;
+            --card:#FFFFFF;
+            --ink:#101828;
+            --muted:#65708A;
+            --line:#E3E8F2;
+            --emerald:#0E9F6E;
+            --emerald-dark:#0B8059;
+            --gold:#E3A73B;
+            --danger:#E0483E;
+            --danger-dark:#C8382F;
+            --blue:#2F80ED;
+            --radius:16px;
+            --mono:'JetBrains Mono', monospace;
+            --display:'Sora', sans-serif;
+            --body:'Inter', sans-serif;
+        }
+
+        *{ margin:0; padding:0; box-sizing:border-box; }
+
+        body{
+            font-family:var(--body);
+            background:
+                    radial-gradient(circle at 15% -10%, rgba(14,159,110,0.10), transparent 45%),
+                    radial-gradient(circle at 100% 0%, rgba(227,167,59,0.10), transparent 40%),
+                    var(--paper);
+            color:var(--ink);
+            min-height:100vh;
+        }
+
+        .navbar{
+            background:linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%);
+            color:#fff;
+            padding:16px 32px;
+            display:flex;
+            align-items:center;
+            gap:12px;
+            box-shadow:0 2px 18px rgba(11,29,51,0.25);
+        }
+
+        .navbar .mark{
+            width:34px; height:34px;
+            border-radius:9px;
+            background:linear-gradient(135deg, var(--emerald), var(--emerald-dark));
+            display:flex; align-items:center; justify-content:center;
+            font-family:var(--display); font-weight:800; font-size:16px;
+            box-shadow:inset 0 0 0 1px rgba(255,255,255,0.15);
+        }
+
+        .navbar .title{ font-family:var(--display); font-weight:700; font-size:19px; letter-spacing:0.2px; }
+
+        .navbar .sub{
+            font-size:12px; color:rgba(255,255,255,0.55); font-weight:500;
+            margin-left:auto; letter-spacing:0.4px; text-transform:uppercase;
+        }
+
+        .shell{ max-width:1160px; margin:40px auto 60px; padding:0 24px; }
+
+        .flash{
+            padding:14px 18px; border-radius:12px; font-size:14px; font-weight:600; margin-bottom:20px;
+        }
+        .flash.success{ background:rgba(14,159,110,0.10); color:var(--emerald-dark); border:1px solid rgba(14,159,110,0.25); }
+        .flash.error{ background:rgba(224,72,62,0.10); color:var(--danger); border:1px solid rgba(224,72,62,0.25); }
+
+        .top-grid{
+            display:grid; grid-template-columns:1fr 1fr; gap:28px; align-items:start; margin-bottom:32px;
+        }
+
+        @media (max-width:900px){ .top-grid{ grid-template-columns:1fr; } }
+
+        .card{
+            background:var(--card); border-radius:var(--radius); border:1px solid var(--line);
+            box-shadow:0 12px 30px -14px rgba(16,24,40,0.18); overflow:hidden;
+        }
+
+        .card-head{
+            display:flex; align-items:center; gap:10px; padding:18px 26px;
+            border-bottom:1px solid var(--line); background:linear-gradient(180deg, #FAFBFE, #FFFFFF);
+        }
+
+        .dot{ width:10px; height:10px; border-radius:50%; }
+        .dot.r{ background:#F04438; } .dot.y{ background:#F5B94A; } .dot.g{ background:#37C978; }
+
+        .card-head .label{ font-family:var(--mono); font-size:12.5px; color:var(--muted); margin-left:8px; letter-spacing:0.3px; }
+
+        .card-body{ padding:26px 28px 24px; }
+
+        h2{ font-family:var(--display); font-size:19px; font-weight:700; color:var(--navy); margin-bottom:4px; }
+        .lede{ font-size:13px; color:var(--muted); margin-bottom:20px; }
+
+        .field{ margin-top:14px; }
+
+        label{
+            display:block; font-size:12px; font-weight:600; color:var(--navy);
+            margin-bottom:6px; letter-spacing:0.2px; text-transform:uppercase;
+        }
+
+        select, input{
+            width:100%; padding:11px 13px; border:1.5px solid var(--line); border-radius:10px;
+            font-size:14.5px; font-family:var(--body); color:var(--ink); background:#FCFDFF;
+            transition:border-color .15s ease, box-shadow .15s ease;
+        }
+
+        select:focus, input:focus{
+            outline:none; border-color:var(--emerald); background:#fff; box-shadow:0 0 0 4px rgba(14,159,110,0.14);
+        }
+
+        select{ appearance:none;
+            background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%2365708A' stroke-width='2' fill='none' fill-rule='evenodd'/%3E%3C/svg%3E");
+            background-repeat:no-repeat; background-position:right 16px center; padding-right:38px;
+        }
+
+        .qty-row{ display:flex; gap:12px; align-items:flex-end; }
+        .qty-row .field{ margin-top:14px; }
+        .qty-row input[type="number"]{ width:90px; font-family:var(--mono); }
+
+        .add-btn{
+            padding:11px 20px; border:none; border-radius:10px; background:linear-gradient(135deg, var(--emerald), var(--emerald-dark));
+            color:#fff; font-weight:700; font-family:var(--display); font-size:14px; cursor:pointer;
+            box-shadow:0 8px 16px -8px rgba(11,128,89,0.5); transition:transform .12s ease, filter .12s ease;
+            white-space:nowrap;
+        }
+        .add-btn:hover{ transform:translateY(-1px); filter:brightness(1.05); }
+
+        .stock-note{ font-size:11.5px; color:var(--muted); margin-top:6px; font-family:var(--mono); }
+        .stock-note.low{ color:#B9791A; }
+        .stock-note.out{ color:var(--danger); }
+
+        /* ---------- Cart (receipt-styled) ---------- */
+        .receipt{
+            background:#fff; border-radius:var(--radius); box-shadow:0 14px 34px -16px rgba(16,24,40,0.22);
+            position:relative; padding:26px 24px 22px; font-family:var(--mono);
+        }
+
+        .receipt::before, .receipt::after{
+            content:""; position:absolute; left:0; right:0; height:14px;
+            background:radial-gradient(circle at 8px 0, transparent 7px, #fff 7.5px) 0 0 / 16px 100% repeat-x;
+        }
+        .receipt::before{ top:-7px; transform:rotate(180deg); }
+        .receipt::after{ bottom:-7px; }
+
+        .receipt-title{ font-family:var(--display); font-weight:700; font-size:14px; color:var(--navy); text-transform:uppercase; letter-spacing:1px; text-align:center; }
+        .receipt-sub{ text-align:center; font-size:11px; color:var(--muted); margin-top:2px; margin-bottom:14px; }
+
+        .receipt hr{ border:none; border-top:1.5px dashed var(--line); margin:14px 0; }
+
+        .cart-table{ width:100%; border-collapse:collapse; }
+        .cart-table td{ padding:9px 4px; font-size:13px; border-bottom:1px dashed var(--line); }
+        .cart-table td.name{ font-weight:600; color:var(--navy); font-family:var(--body); }
+        .cart-table td.num{ text-align:right; white-space:nowrap; }
+        .cart-table td.center{ text-align:center; white-space:nowrap; }
+
+        .qty-btn{
+            width:22px; height:22px; border-radius:6px; border:1px solid var(--line); background:#FAFBFE;
+            color:var(--navy); font-weight:700; cursor:pointer; font-family:var(--mono); font-size:13px; line-height:1;
+        }
+        .qty-btn:hover{ background:var(--emerald); color:#fff; border-color:var(--emerald); }
+        .qty-val{ display:inline-block; min-width:20px; text-align:center; font-weight:600; }
+
+        .remove-btn{
+            border:none; background:none; color:var(--danger); font-size:14px; cursor:pointer; font-weight:700;
+        }
+        .remove-btn:hover{ color:var(--danger-dark); }
+
+        .cart-empty{ text-align:center; padding:26px 10px; color:var(--muted); font-size:13px; font-family:var(--body); }
+
+        .r-total{ display:flex; justify-content:space-between; font-size:16px; font-weight:700; color:var(--navy); margin-top:8px; }
+        .r-total .amt{ color:var(--emerald-dark); }
+
+        .field.phone{ margin-top:18px; }
+        .field.phone input{ font-family:var(--body); }
+
+        .complete-btn{
+            width:100%; margin-top:16px; padding:13px; border:none; border-radius:10px;
+            background:linear-gradient(135deg, var(--emerald), var(--emerald-dark)); color:#fff; font-size:15px;
+            font-weight:700; font-family:var(--display); letter-spacing:0.3px; cursor:pointer;
+            box-shadow:0 10px 20px -8px rgba(11,128,89,0.55); transition:transform .12s ease, filter .12s ease;
+        }
+        .complete-btn:hover:not(:disabled){ transform:translateY(-1px); filter:brightness(1.04); }
+        .complete-btn:disabled{ opacity:0.45; cursor:not-allowed; transform:none; }
+
+        .order-msg{
+            display:none; margin-top:12px; padding:10px 14px; border-radius:9px; font-size:12.5px; font-weight:600;
+            background:rgba(224,72,62,0.1); color:var(--danger-dark); border:1px solid rgba(224,72,62,0.25);
+            font-family:var(--body);
+        }
+
+        /* ---------- Stats + history ---------- */
+        .stats{ display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin-bottom:20px; }
+        @media (max-width:600px){ .stats{ grid-template-columns:1fr; } }
+
+        .stat{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px 18px; box-shadow:0 8px 20px -14px rgba(16,24,40,0.25); }
+        .stat .k{ font-size:11.5px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.4px; }
+        .stat .v{ font-family:var(--mono); font-size:22px; font-weight:600; color:var(--emerald-dark); margin-top:6px; }
+
+        .table-card{ background:var(--card); border-radius:var(--radius); border:1px solid var(--line); box-shadow:0 12px 30px -14px rgba(16,24,40,0.18); overflow:hidden; }
+        .table-top{ display:flex; align-items:center; padding:20px 24px 4px; }
+        .table-wrap{ padding:6px 24px 24px; overflow-x:auto; }
+
+        table.history{ width:100%; border-collapse:collapse; min-width:640px; }
+        table.history th{
+            text-align:left; padding:12px 14px; font-size:11px; font-weight:700; text-transform:uppercase;
+            letter-spacing:0.5px; color:var(--muted); border-bottom:2px solid var(--line);
+        }
+        table.history th.num, table.history td.num{ text-align:right; }
+        table.history th.center, table.history td.center{ text-align:center; }
+        table.history td{ padding:13px 14px; font-size:14px; border-bottom:1px solid var(--line); color:var(--ink); }
+        table.history td.mono{ font-family:var(--mono); }
+        table.history td.items{ font-size:13px; color:var(--muted); max-width:320px; }
+        table.history tbody tr:hover{ background:#F6FAF8; }
+
+        .back{
+            display:inline-block; margin-top:20px; text-decoration:none; background:var(--navy); color:white;
+            padding:11px 20px; border-radius:9px; font-weight:600; font-size:14px;
+            transition:transform .12s ease, filter .12s ease;
+        }
+        .back:hover{ filter:brightness(1.15); transform:translateY(-1px); }
+
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="mark">H</div>
+    <div class="title">HisabGhor POS</div>
+    <div class="sub">Sales · New Transaction</div>
+</div>
+
+<div class="shell">
+
+    <!-- ---------- Flash messages (order shofol/byartho holo kina) ---------- -->
+    <div class="flash success" th:if="${success}" th:text="${success}"></div>
+    <div class="flash error" th:if="${error}" th:text="${error}"></div>
+
+    <div class="top-grid">
+
+        <!-- ---------- Product picker ---------- -->
+        <div class="card">
+            <div class="card-head">
+                <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+                <span class="label">sales/pick-product</span>
+            </div>
+            <div class="card-body">
+                <h2>Add Product</h2>
+                <p class="lede">Customer ja ja niche chai, ekta ekta kore cart-e add koro.</p>
+
+                <div class="field">
+                    <label>Select Product</label>
+                    <select id="f-product">
+                        <option value="">Select Product</option>
+                        <option th:each="p : ${products}"
+                                th:value="${p.id}"
+                                th:text="${p.name} + ' (stock: ' + ${p.stock} + ')'"
+                                th:attr="data-name=${p.name},data-price=${p.price},data-stock=${p.stock}">
+                        </option>
+                    </select>
+                    <div class="stock-note" id="stockNote">Product select korle stock dekha jabe</div>
+                </div>
+
+                <div class="qty-row">
+                    <div class="field" style="flex:1;">
+                        <label>Quantity</label>
+                        <input type="number" min="1" value="1" id="f-qty">
+                    </div>
+                    <button type="button" class="add-btn" id="addToCartBtn">+ Add to Cart</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ---------- Live cart / receipt ---------- -->
+        <div class="card">
+            <div class="card-head">
+                <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+                <span class="label">sales/cart</span>
+            </div>
+            <div class="card-body">
+                <div class="receipt">
+                    <div class="receipt-title">HisabGhor POS</div>
+                    <div class="receipt-sub">Current Cart</div>
+                    <hr>
+
+                    <table class="cart-table">
+                        <tbody id="cartBody"></tbody>
+                    </table>
+                    <div class="cart-empty" id="cartEmpty">Cart empty — product add koro</div>
+
+                    <hr>
+
+                    <div class="r-total"><span>Total</span><span class="amt" id="cartTotal">৳ 0.00</span></div>
+
+                    <div class="field phone">
+                        <label>Customer Phone <span style="text-transform:none; font-weight:500; color:var(--muted);">(optional)</span></label>
+                        <input type="text" id="customerPhone" placeholder="e.g. 017XXXXXXXX">
+                    </div>
+
+                    <button type="button" class="complete-btn" id="completeSaleBtn" disabled>✅ Complete Sale</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ---------- Hidden form — cart JS diye ei form-e populate kore submit kore ---------- -->
+    <form id="orderForm" th:action="@{/order}" method="post" style="display:none;">
+        <div id="orderItemsContainer"></div>
+        <input type="hidden" name="customerPhone" id="hiddenCustomerPhone">
+    </form>
+
+    <!-- ---------- Today's stats ---------- -->
+    <div class="stats">
+        <div class="stat">
+            <div class="k">Transactions Today</div>
+            <div class="v" th:text="${transactionCount}">0</div>
+        </div>
+        <div class="stat">
+            <div class="k">Items Sold</div>
+            <div class="v" th:text="${itemsSold}">0</div>
+        </div>
+        <div class="stat">
+            <div class="k">Revenue Today</div>
+            <div class="v" th:text="'৳ ' + ${#numbers.formatDecimal(revenue, 1, 2)}">৳ 0</div>
+        </div>
+    </div>
+
+    <!-- ---------- Today's orders ---------- -->
+    <div class="table-card">
+        <div class="table-top"><h2>Today's Orders</h2></div>
+
+        <div class="table-wrap">
+            <p th:if="${todayOrders.isEmpty()}">No orders yet today</p>
+            <table class="history" th:unless="${todayOrders.isEmpty()}">
+                <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Items</th>
+                    <th class="num">Total (Tk)</th>
+                    <th class="center">Time</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="o : ${todayOrders}">
+                    <td class="mono" th:text="'#' + ${o.id}"></td>
+                    <td class="items">
+                        <span th:each="item, iter : ${o.items}">
+                            <span th:text="${item.product.name} + ' ×' + ${item.quantity}"></span><span th:if="${!iter.last}">, </span>
+                        </span>
+                    </td>
+                    <td class="num mono" th:text="${#numbers.formatDecimal(o.totalAmount, 1, 2)}"></td>
+                    <td class="center mono" th:text="${#temporals.format(o.orderDateTime, 'hh:mm a')}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <a class="back" href="/">← Dashboard</a>
+
+</div>
+
+<script>
+    let cart = []; // { productId, name, price, stock, quantity }
+
+    const productSelect   = document.getElementById('f-product');
+    const qtyInput        = document.getElementById('f-qty');
+    const stockNote       = document.getElementById('stockNote');
+    const addBtn          = document.getElementById('addToCartBtn');
+    const cartBody        = document.getElementById('cartBody');
+    const cartEmpty       = document.getElementById('cartEmpty');
+    const cartTotalEl     = document.getElementById('cartTotal');
+    const completeBtn     = document.getElementById('completeSaleBtn');
+    const customerPhoneEl = document.getElementById('customerPhone');
+
+    function updateStockNote(){
+        const opt = productSelect.options[productSelect.selectedIndex];
+        if(!opt || !opt.value){
+            stockNote.textContent = 'Product select korle stock dekha jabe';
+            stockNote.className = 'stock-note';
+            return;
+        }
+        const stock = parseInt(opt.dataset.stock, 10);
+        if(stock === 0){
+            stockNote.textContent = 'Out of stock';
+            stockNote.className = 'stock-note out';
+        } else if(stock <= 10){
+            stockNote.textContent = 'Only ' + stock + ' left in stock';
+            stockNote.className = 'stock-note low';
+        } else {
+            stockNote.textContent = stock + ' units available';
+            stockNote.className = 'stock-note';
+        }
+    }
+
+    function renderCart(){
+        if(cart.length === 0){
+            cartBody.innerHTML = '';
+            cartEmpty.style.display = 'block';
+            completeBtn.disabled = true;
+        } else {
+            cartEmpty.style.display = 'none';
+            completeBtn.disabled = false;
+            cartBody.innerHTML = cart.map((item, idx) => `
+                <tr>
+                    <td class="name">${item.name}</td>
+                    <td class="center">
+                        <button type="button" class="qty-btn" onclick="changeQty(${idx}, -1)">−</button>
+                        <span class="qty-val">${item.quantity}</span>
+                        <button type="button" class="qty-btn" onclick="changeQty(${idx}, 1)">+</button>
+                    </td>
+                    <td class="num">৳ ${(item.price * item.quantity).toFixed(2)}</td>
+                    <td class="center"><button type="button" class="remove-btn" onclick="removeItem(${idx})">✕</button></td>
+                </tr>
+            `).join('');
+        }
+        const total = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
+        cartTotalEl.textContent = '৳ ' + total.toFixed(2);
+    }
+
+    function changeQty(idx, delta){
+        const item = cart[idx];
+        const newQty = item.quantity + delta;
+        if(newQty <= 0){
+            cart.splice(idx, 1);
+        } else if(newQty > item.stock){
+            alert(item.name + ' -er stock e maximum ' + item.stock + ' ta ache');
+        } else {
+            item.quantity = newQty;
+        }
+        renderCart();
+    }
+
+    function removeItem(idx){
+        cart.splice(idx, 1);
+        renderCart();
+    }
+
+    addBtn.addEventListener('click', () => {
+        const opt = productSelect.options[productSelect.selectedIndex];
+        if(!opt || !opt.value){ alert('Prothome product select koro'); return; }
+
+        const productId = parseInt(opt.value, 10);
+        const price = parseFloat(opt.dataset.price);
+        const stock = parseInt(opt.dataset.stock, 10);
+        const name = opt.dataset.name;
+        const qty = parseInt(qtyInput.value, 10) || 1;
+
+        if(stock === 0){ alert(name + ' out of stock'); return; }
+
+        const existing = cart.find(i => i.productId === productId);
+        const currentQtyInCart = existing ? existing.quantity : 0;
+
+        if(currentQtyInCart + qty > stock){
+            alert(name + ' -er stock (' + stock + ') theke beshi cart-e add kora jabe na');
+            return;
+        }
+
+        if(existing){ existing.quantity += qty; }
+        else { cart.push({ productId, name, price, stock, quantity: qty }); }
+
+        renderCart();
+        qtyInput.value = 1;
+    });
+
+    const orderForm            = document.getElementById('orderForm');
+    const orderItemsContainer  = document.getElementById('orderItemsContainer');
+    const hiddenCustomerPhone  = document.getElementById('hiddenCustomerPhone');
+
+    completeBtn.addEventListener('click', () => {
+        if(cart.length === 0) return;
+
+        completeBtn.disabled = true;
+        completeBtn.textContent = 'Processing...';
+
+        // ---------- hidden form-e cart-er protita item ke Spring-er indexed list binding format-e boshano ----------
+        // e.g. items[0].productId, items[0].quantity, items[1].productId, ...
+        orderItemsContainer.innerHTML = '';
+        cart.forEach((item, idx) => {
+            const productIdInput = document.createElement('input');
+            productIdInput.type = 'hidden';
+            productIdInput.name = `items[${idx}].productId`;
+            productIdInput.value = item.productId;
+            orderItemsContainer.appendChild(productIdInput);
+
+            const qtyInput2 = document.createElement('input');
+            qtyInput2.type = 'hidden';
+            qtyInput2.name = `items[${idx}].quantity`;
+            qtyInput2.value = item.quantity;
+            orderItemsContainer.appendChild(qtyInput2);
+        });
+
+        hiddenCustomerPhone.value = customerPhoneEl.value.trim();
+
+        orderForm.submit(); // normal page navigation — /order e POST hobe, tarpor /sale e redirect
+    });
+
+    productSelect.addEventListener('change', updateStockNote);
+
+    renderCart();
+    updateStockNote();
+</script>
+
+</body>
+</html>
+
+<!--<!DOCTYPE html>-->
+<!--<html lang="en" xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Sales · HisabGhor POS</title>-->
+
+<!--    <link rel="preconnect" href="https://fonts.googleapis.com">-->
+<!--    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">-->
+
+<!--    <style>-->
+
+<!--        :root{-->
+<!--            &#45;&#45;navy:#0B1D33;-->
+<!--            &#45;&#45;navy-2:#122744;-->
+<!--            &#45;&#45;paper:#F3F6FB;-->
+<!--            &#45;&#45;card:#FFFFFF;-->
+<!--            &#45;&#45;ink:#101828;-->
+<!--            &#45;&#45;muted:#65708A;-->
+<!--            &#45;&#45;line:#E3E8F2;-->
+<!--            &#45;&#45;emerald:#0E9F6E;-->
+<!--            &#45;&#45;emerald-dark:#0B8059;-->
+<!--            &#45;&#45;gold:#E3A73B;-->
+<!--            &#45;&#45;danger:#E0483E;-->
+<!--            &#45;&#45;blue:#2F80ED;-->
+<!--            &#45;&#45;radius:16px;-->
+<!--            &#45;&#45;mono:'JetBrains Mono', monospace;-->
+<!--            &#45;&#45;display:'Sora', sans-serif;-->
+<!--            &#45;&#45;body:'Inter', sans-serif;-->
+<!--        }-->
+
+<!--        *{ margin:0; padding:0; box-sizing:border-box; }-->
+
+<!--        body{-->
+<!--            font-family:var(&#45;&#45;body);-->
+<!--            background:-->
+<!--                    radial-gradient(circle at 15% -10%, rgba(14,159,110,0.10), transparent 45%),-->
+<!--                    radial-gradient(circle at 100% 0%, rgba(227,167,59,0.10), transparent 40%),-->
+<!--                    var(&#45;&#45;paper);-->
+<!--            color:var(&#45;&#45;ink);-->
+<!--            min-height:100vh;-->
+<!--        }-->
+
+<!--        /* &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; Top bar &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; */-->
+<!--        .navbar{-->
+<!--            background:linear-gradient(135deg, var(&#45;&#45;navy) 0%, var(&#45;&#45;navy-2) 100%);-->
+<!--            color:#fff;-->
+<!--            padding:16px 32px;-->
+<!--            display:flex;-->
+<!--            align-items:center;-->
+<!--            gap:12px;-->
+<!--            box-shadow:0 2px 18px rgba(11,29,51,0.25);-->
+<!--        }-->
+
+<!--        .navbar .mark{-->
+<!--            width:34px; height:34px;-->
+<!--            border-radius:9px;-->
+<!--            background:linear-gradient(135deg, var(&#45;&#45;emerald), var(&#45;&#45;emerald-dark));-->
+<!--            display:flex; align-items:center; justify-content:center;-->
+<!--            font-family:var(&#45;&#45;display); font-weight:800; font-size:16px;-->
+<!--            box-shadow:inset 0 0 0 1px rgba(255,255,255,0.15);-->
+<!--        }-->
+
+<!--        .navbar .title{-->
+<!--            font-family:var(&#45;&#45;display);-->
+<!--            font-weight:700;-->
+<!--            font-size:19px;-->
+<!--            letter-spacing:0.2px;-->
+<!--        }-->
+
+<!--        .navbar .sub{-->
+<!--            font-size:12px;-->
+<!--            color:rgba(255,255,255,0.55);-->
+<!--            font-weight:500;-->
+<!--            margin-left:auto;-->
+<!--            letter-spacing:0.4px;-->
+<!--            text-transform:uppercase;-->
+<!--        }-->
+
+<!--        /* &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; Page shell &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; */-->
+<!--        .shell{-->
+<!--            max-width:1160px;-->
+<!--            margin:40px auto 60px;-->
+<!--            padding:0 24px;-->
+<!--        }-->
+
+<!--        .top-grid{-->
+<!--            display:grid;-->
+<!--            grid-template-columns:1.2fr 0.8fr;-->
+<!--            gap:28px;-->
+<!--            align-items:start;-->
+<!--            margin-bottom:32px;-->
+<!--        }-->
+
+<!--        @media (max-width:820px){-->
+<!--            .top-grid{ grid-template-columns:1fr; }-->
+<!--        }-->
+
+<!--        /* &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; Form card &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; */-->
+<!--        .card{-->
+<!--            background:var(&#45;&#45;card);-->
+<!--            border-radius:var(&#45;&#45;radius);-->
+<!--            border:1px solid var(&#45;&#45;line);-->
+<!--            box-shadow:0 12px 30px -14px rgba(16,24,40,0.18);-->
+<!--            overflow:hidden;-->
+<!--        }-->
+
+<!--        .card-head{-->
+<!--            display:flex;-->
+<!--            align-items:center;-->
+<!--            gap:10px;-->
+<!--            padding:18px 26px;-->
+<!--            border-bottom:1px solid var(&#45;&#45;line);-->
+<!--            background:linear-gradient(180deg, #FAFBFE, #FFFFFF);-->
+<!--        }-->
+
+<!--        .dot{ width:10px; height:10px; border-radius:50%; }-->
+<!--        .dot.r{ background:#F04438; }-->
+<!--        .dot.y{ background:#F5B94A; }-->
+<!--        .dot.g{ background:#37C978; }-->
+
+<!--        .card-head .label{-->
+<!--            font-family:var(&#45;&#45;mono);-->
+<!--            font-size:12.5px;-->
+<!--            color:var(&#45;&#45;muted);-->
+<!--            margin-left:8px;-->
+<!--            letter-spacing:0.3px;-->
+<!--        }-->
+
+<!--        form{ padding:28px 28px 24px; }-->
+
+<!--        h2{-->
+<!--            font-family:var(&#45;&#45;display);-->
+<!--            font-size:20px;-->
+<!--            font-weight:700;-->
+<!--            color:var(&#45;&#45;navy);-->
+<!--            margin-bottom:4px;-->
+<!--        }-->
+
+<!--        .lede{-->
+<!--            font-size:13px;-->
+<!--            color:var(&#45;&#45;muted);-->
+<!--            margin-bottom:20px;-->
+<!--        }-->
+
+<!--        .field{ margin-top:16px; }-->
+
+<!--        label{-->
+<!--            display:flex;-->
+<!--            justify-content:space-between;-->
+<!--            font-size:12px;-->
+<!--            font-weight:600;-->
+<!--            color:var(&#45;&#45;navy);-->
+<!--            margin-bottom:6px;-->
+<!--            letter-spacing:0.2px;-->
+<!--            text-transform:uppercase;-->
+<!--        }-->
+
+<!--        label .hint{-->
+<!--            font-weight:500;-->
+<!--            color:var(&#45;&#45;muted);-->
+<!--            text-transform:none;-->
+<!--            font-size:11.5px;-->
+<!--        }-->
+
+<!--        select, input{-->
+<!--            width:100%;-->
+<!--            padding:11px 13px;-->
+<!--            border:1.5px solid var(&#45;&#45;line);-->
+<!--            border-radius:10px;-->
+<!--            font-size:14.5px;-->
+<!--            font-family:var(&#45;&#45;body);-->
+<!--            color:var(&#45;&#45;ink);-->
+<!--            background:#FCFDFF;-->
+<!--            transition:border-color .15s ease, box-shadow .15s ease, background .15s ease;-->
+<!--        }-->
+
+<!--        input[name="quantity"]{ font-family:var(&#45;&#45;mono); }-->
+
+<!--        select:hover, input:hover{ border-color:#C9D3E4; }-->
+
+<!--        select:focus, input:focus{-->
+<!--            outline:none;-->
+<!--            border-color:var(&#45;&#45;emerald);-->
+<!--            background:#fff;-->
+<!--            box-shadow:0 0 0 4px rgba(14,159,110,0.14);-->
+<!--        }-->
+
+<!--        select{ appearance:none;-->
+<!--            background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%2365708A' stroke-width='2' fill='none' fill-rule='evenodd'/%3E%3C/svg%3E");-->
+<!--            background-repeat:no-repeat;-->
+<!--            background-position:right 16px center;-->
+<!--            padding-right:38px;-->
+<!--        }-->
+
+<!--        .stock-note{-->
+<!--            font-size:11.5px;-->
+<!--            color:var(&#45;&#45;muted);-->
+<!--            margin-top:6px;-->
+<!--            font-family:var(&#45;&#45;mono);-->
+<!--        }-->
+
+<!--        .stock-note.low{ color:#B9791A; }-->
+<!--        .stock-note.out{ color:var(&#45;&#45;danger); }-->
+
+<!--        button{-->
+<!--            width:100%;-->
+<!--            margin-top:24px;-->
+<!--            padding:13px;-->
+<!--            border:none;-->
+<!--            border-radius:10px;-->
+<!--            background:linear-gradient(135deg, var(&#45;&#45;emerald), var(&#45;&#45;emerald-dark));-->
+<!--            color:white;-->
+<!--            font-size:15px;-->
+<!--            font-weight:700;-->
+<!--            font-family:var(&#45;&#45;display);-->
+<!--            letter-spacing:0.3px;-->
+<!--            cursor:pointer;-->
+<!--            box-shadow:0 10px 20px -8px rgba(11,128,89,0.55);-->
+<!--            transition:transform .12s ease, filter .12s ease;-->
+<!--        }-->
+
+<!--        button:hover{ transform:translateY(-1px); filter:brightness(1.04); }-->
+<!--        button:disabled{ opacity:0.5; cursor:not-allowed; transform:none; }-->
+
+<!--        /* &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; Live receipt &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; */-->
+<!--        .receipt-wrap{ position:sticky; top:24px; }-->
+
+<!--        .receipt{-->
+<!--            background:#fff;-->
+<!--            border-radius:var(&#45;&#45;radius);-->
+<!--            box-shadow:0 14px 34px -16px rgba(16,24,40,0.22);-->
+<!--            position:relative;-->
+<!--            padding:26px 24px 20px;-->
+<!--            font-family:var(&#45;&#45;mono);-->
+<!--        }-->
+
+<!--        .receipt::before, .receipt::after{-->
+<!--            content:"";-->
+<!--            position:absolute;-->
+<!--            left:0; right:0;-->
+<!--            height:14px;-->
+<!--            background:-->
+<!--                    radial-gradient(circle at 8px 0, transparent 7px, #fff 7.5px) 0 0 / 16px 100% repeat-x;-->
+<!--        }-->
+<!--        .receipt::before{ top:-7px; transform:rotate(180deg); }-->
+<!--        .receipt::after{ bottom:-7px; }-->
+
+<!--        .receipt-title{-->
+<!--            font-family:var(&#45;&#45;display);-->
+<!--            font-weight:700;-->
+<!--            font-size:14px;-->
+<!--            color:var(&#45;&#45;navy);-->
+<!--            text-transform:uppercase;-->
+<!--            letter-spacing:1px;-->
+<!--            text-align:center;-->
+<!--        }-->
+
+<!--        .receipt-sub{-->
+<!--            text-align:center;-->
+<!--            font-size:11px;-->
+<!--            color:var(&#45;&#45;muted);-->
+<!--            margin-top:2px;-->
+<!--            margin-bottom:14px;-->
+<!--        }-->
+
+<!--        .receipt hr{-->
+<!--            border:none;-->
+<!--            border-top:1.5px dashed var(&#45;&#45;line);-->
+<!--            margin:12px 0;-->
+<!--        }-->
+
+<!--        .r-row{-->
+<!--            display:flex;-->
+<!--            justify-content:space-between;-->
+<!--            font-size:13px;-->
+<!--            color:var(&#45;&#45;ink);-->
+<!--            padding:4px 0;-->
+<!--        }-->
+
+<!--        .r-row .k{ color:var(&#45;&#45;muted); }-->
+<!--        .r-row .v{ font-weight:600; }-->
+<!--        .r-row .v.empty{ color:#B7BFCF; font-weight:500; }-->
+
+<!--        .r-total{-->
+<!--            display:flex;-->
+<!--            justify-content:space-between;-->
+<!--            font-size:16px;-->
+<!--            font-weight:700;-->
+<!--            color:var(&#45;&#45;navy);-->
+<!--            margin-top:6px;-->
+<!--        }-->
+
+<!--        .r-total .amt{ color:var(&#45;&#45;emerald-dark); }-->
+
+<!--        .foot-note{-->
+<!--            text-align:center;-->
+<!--            font-size:10.5px;-->
+<!--            color:#B7BFCF;-->
+<!--            margin-top:16px;-->
+<!--            letter-spacing:0.5px;-->
+<!--        }-->
+
+<!--        /* &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; Sales history &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; */-->
+<!--        .stats{-->
+<!--            display:grid;-->
+<!--            grid-template-columns:repeat(3, 1fr);-->
+<!--            gap:16px;-->
+<!--            margin-bottom:20px;-->
+<!--        }-->
+
+<!--        @media (max-width:600px){ .stats{ grid-template-columns:1fr; } }-->
+
+<!--        .stat{-->
+<!--            background:var(&#45;&#45;card);-->
+<!--            border:1px solid var(&#45;&#45;line);-->
+<!--            border-radius:14px;-->
+<!--            padding:16px 18px;-->
+<!--            box-shadow:0 8px 20px -14px rgba(16,24,40,0.25);-->
+<!--        }-->
+
+<!--        .stat .k{-->
+<!--            font-size:11.5px;-->
+<!--            color:var(&#45;&#45;muted);-->
+<!--            font-weight:600;-->
+<!--            text-transform:uppercase;-->
+<!--            letter-spacing:0.4px;-->
+<!--        }-->
+
+<!--        .stat .v{-->
+<!--            font-family:var(&#45;&#45;mono);-->
+<!--            font-size:22px;-->
+<!--            font-weight:600;-->
+<!--            color:var(&#45;&#45;emerald-dark);-->
+<!--            margin-top:6px;-->
+<!--        }-->
+
+<!--        .table-card{-->
+<!--            background:var(&#45;&#45;card);-->
+<!--            border-radius:var(&#45;&#45;radius);-->
+<!--            border:1px solid var(&#45;&#45;line);-->
+<!--            box-shadow:0 12px 30px -14px rgba(16,24,40,0.18);-->
+<!--            overflow:hidden;-->
+<!--        }-->
+
+<!--        .table-top{-->
+<!--            display:flex;-->
+<!--            align-items:center;-->
+<!--            gap:14px;-->
+<!--            padding:20px 24px 4px;-->
+<!--            flex-wrap:wrap;-->
+<!--        }-->
+
+<!--        .table-top h2{ margin-right:auto; }-->
+
+<!--        .search{-->
+<!--            position:relative;-->
+<!--            flex:1;-->
+<!--            min-width:180px;-->
+<!--            max-width:280px;-->
+<!--        }-->
+
+<!--        .search input{-->
+<!--            padding-left:34px;-->
+<!--            background:#FCFDFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2365708A' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E") no-repeat 10px center;-->
+<!--        }-->
+
+<!--        .table-wrap{ padding:6px 24px 24px; overflow-x:auto; }-->
+
+<!--        table{-->
+<!--            width:100%;-->
+<!--            border-collapse:collapse;-->
+<!--            min-width:600px;-->
+<!--        }-->
+
+<!--        th{-->
+<!--            text-align:left;-->
+<!--            padding:12px 14px;-->
+<!--            font-size:11px;-->
+<!--            font-weight:700;-->
+<!--            text-transform:uppercase;-->
+<!--            letter-spacing:0.5px;-->
+<!--            color:var(&#45;&#45;muted);-->
+<!--            border-bottom:2px solid var(&#45;&#45;line);-->
+<!--        }-->
+
+<!--        th.num, td.num{ text-align:right; }-->
+<!--        th.center, td.center{ text-align:center; }-->
+
+<!--        td{-->
+<!--            padding:13px 14px;-->
+<!--            font-size:14px;-->
+<!--            border-bottom:1px solid var(&#45;&#45;line);-->
+<!--            color:var(&#45;&#45;ink);-->
+<!--        }-->
+
+<!--        td.mono{ font-family:var(&#45;&#45;mono); }-->
+<!--        td.name{ font-weight:600; color:var(&#45;&#45;navy); }-->
+
+<!--        tbody tr{ transition:background .12s ease; }-->
+<!--        tbody tr:hover{ background:#F6FAF8; }-->
+
+<!--        .back{-->
+<!--            display:inline-block;-->
+<!--            margin-top:20px;-->
+<!--            text-decoration:none;-->
+<!--            background:var(&#45;&#45;navy);-->
+<!--            color:white;-->
+<!--            padding:11px 20px;-->
+<!--            border-radius:9px;-->
+<!--            font-weight:600;-->
+<!--            font-size:14px;-->
+<!--            transition:transform .12s ease, filter .12s ease;-->
+<!--        }-->
+
+<!--        .back:hover{ filter:brightness(1.15); transform:translateY(-1px); }-->
+
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+
+<!--<div class="navbar">-->
+<!--    <div class="mark">H</div>-->
+<!--    <div class="title">HisabGhor POS</div>-->
+<!--    <div class="sub">Sales · New Transaction</div>-->
+<!--</div>-->
+
+<!--<div class="shell">-->
+
+<!--    <div class="top-grid">-->
+
+<!--        &lt;!&ndash; &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; Sell form &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; &ndash;&gt;-->
+<!--        <div class="card">-->
+<!--            <div class="card-head">-->
+<!--                <span class="dot r"></span>-->
+<!--                <span class="dot y"></span>-->
+<!--                <span class="dot g"></span>-->
+<!--                <span class="label">sales/new</span>-->
+<!--            </div>-->
+
+<!--            <form th:action="@{/sale}" th:object="${sale}" method="post" id="sellForm">-->
+<!--                <h2>Sell Product</h2>-->
+<!--                <p class="lede">Pick an item and quantity — the receipt updates live as you type.</p>-->
+
+<!--                <div class="field">-->
+<!--                    <label>Select Product</label>-->
+<!--                    <select th:field="*{product.id}" id="f-product">-->
+<!--                        <option value="">Select Product</option>-->
+<!--                        <option th:each="p : ${products}"-->
+<!--                        th:value="${p.id}"-->
+<!--                        th:text="${p.name} + '(stock:'+${p.stock} + ')'"-->
+<!--                        th:attr="data-name=${p.name},data-price=${p.price},data-stock=${p.stock}">-->
+<!--                        </option>-->
+
+<!--                    </select>-->
+<!--                    <div class="stock-note" id="stockNote">Choose a product to see current stock</div>-->
+<!--                </div>-->
+
+<!--                <div class="field">-->
+<!--                    <label>Quantity</label>-->
+<!--                    <input type="number" min="1" value="1" name="quantity" th:field="*{quantity}" id="f-qty">-->
+<!--                    <span class="error" th:errors="*{quantity}"></span>-->
+<!--                </div>-->
+
+<!--                <div class="field">-->
+<!--                    <label>Sale Date</label>-->
+<!--                    <input type="date" name="saleDate" th:field="*{saleDate}" id="f-date">-->
+<!--                </div>-->
+
+<!--                <button type="submit" id="sellBtn">Sell Product</button>-->
+<!--            </form>-->
+<!--        </div>-->
+
+
+<!--        &lt;!&ndash; &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; Live receipt &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; &ndash;&gt;-->
+<!--        <div class="receipt-wrap">-->
+<!--            <div class="receipt">-->
+<!--                <div class="receipt-title">HisabGhor POS</div>-->
+<!--                <div class="receipt-sub">Sale Preview</div>-->
+
+<!--                <hr>-->
+
+<!--                <div class="r-row"><span class="k">Item</span><span class="v empty" id="p-name">—</span></div>-->
+<!--                <div class="r-row"><span class="k">Unit Price</span><span class="v empty" id="p-unit">—</span></div>-->
+<!--                <div class="r-row"><span class="k">Quantity</span><span class="v" id="p-qty">1</span></div>-->
+<!--                <div class="r-row"><span class="k">Date</span><span class="v empty" id="p-date">—</span></div>-->
+
+<!--                <hr>-->
+
+<!--                <div class="r-total"><span>Total</span><span class="amt" id="p-total">৳ 0.00</span></div>-->
+
+<!--                <div class="foot-note">Preview only · not yet saved</div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--    </div>-->
+
+<!--    &lt;!&ndash; &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; Sales history &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; &ndash;&gt;-->
+<!--    <div class="stats">-->
+<!--        <div class="stat">-->
+<!--            <div class="k">Transactions Today</div>-->
+<!--            <div class="v" th:text="${transactionCount}">0</div>-->
+<!--        </div>-->
+<!--        <div class="stat">-->
+<!--            <div class="k">Items Sold</div>-->
+<!--            <div class="v" th:text="${itemsSold}">0</div>-->
+<!--        </div>-->
+<!--        <div class="stat">-->
+<!--            <div class="k">Revenue Today</div>-->
+<!--            <div class="v" th:text="${revenue}">৳ 0</div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    <div class="table-card">-->
+<!--        <div class="table-top">-->
+<!--            <h2>Today's Sales</h2>-->
+<!--            <div class="search">-->
+<!--                <input type="text" id="searchBox" placeholder="Search by product…">-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="table-wrap">-->
+<!--            <p th:if="${todaySalesTable.isEmpty()}">No Products available</p>-->
+<!--            <table id="salesTable" th:unless="${todaySalesTable.isEmpty()}">-->
+<!--                <thead>-->
+<!--                <tr>-->
+<!--                    <th>ID</th>-->
+<!--                    <th>Product</th>-->
+<!--                    <th class="center">Quantity</th>-->
+<!--                    <th class="num">Total Price (Tk)</th>-->
+<!--                    <th class="center">Date</th>-->
+<!--                </tr>-->
+<!--                </thead>-->
+<!--                <tbody>-->
+<!--                &lt;!&ndash; sample rows — replace with real data from your backend   th:attr="data-name=${#strings.toLowerCase(s.product.name)}"&ndash;&gt;-->
+<!--                <tr th:each="s : ${todaySalesTable}" >-->
+<!--                    <td class="mono" th:text="${s.id}">101</td>-->
+<!--                    <td class="name" th:text="${s.product.name}">Product Name</td>-->
+<!--                    <td class="center mono" th:text="${s.quantity}">Quantity</td>-->
+<!--                    <td class="num mono" th:text="${s.totalPrice}">500.0</td>-->
+<!--                    <td class="center mono" th:text="${s.saleDate}">25 Jul 2026</td>-->
+<!--                </tr>-->
+<!--                </tbody>-->
+<!--            </table>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    <a class="back" href="/">← Dashboard</a>-->
+
+<!--</div>-->
+
+<!--<script>-->
+<!--    // const productEl = document.getElementById('f-product');-->
+<!--    // const qtyEl = document.getElementById('f-qty');-->
+<!--    // const dateEl = document.getElementById('f-date');-->
+<!--    // const stockNote = document.getElementById('stockNote');-->
+<!--    // const sellBtn = document.getElementById('sellBtn');-->
+<!--    //-->
+<!--    // const pName = document.getElementById('p-name');-->
+<!--    // const pUnit = document.getElementById('p-unit');-->
+<!--    // const pQty = document.getElementById('p-qty');-->
+<!--    // const pDate = document.getElementById('p-date');-->
+<!--    // const pTotal = document.getElementById('p-total');-->
+
+<!--    // function formatDate(str){-->
+<!--    //     if(!str) return '';-->
+<!--    //     const d = new Date(str + 'T00:00:00');-->
+<!--    //     if(isNaN(d)) return str;-->
+<!--    //     return d.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });-->
+<!--    // }-->
+
+<!--    function refresh(){-->
+<!--        const opt = productEl.options[productEl.selectedIndex];-->
+<!--        const hasProduct = opt && opt.value !== '';-->
+<!--        const stock = hasProduct ? parseInt(opt.dataset.stock, 10) : null;-->
+<!--        const price = hasProduct ? parseFloat(opt.dataset.price) : 0;-->
+<!--        const qty = parseInt(qtyEl.value, 10) || 0;-->
+
+<!--        if(hasProduct){-->
+<!--            pName.textContent = opt.dataset.name;-->
+<!--            pName.classList.remove('empty');-->
+<!--            pUnit.textContent = 'Tk ' + price.toFixed(2);-->
+<!--            pUnit.classList.remove('empty');-->
+
+<!--            if(stock === 0){-->
+<!--                stockNote.textContent = 'Out of stock — cannot sell this item';-->
+<!--                stockNote.className = 'stock-note out';-->
+<!--            } else if(stock <= 10){-->
+<!--                stockNote.textContent = 'Only ' + stock + ' left in stock';-->
+<!--                stockNote.className = 'stock-note low';-->
+<!--            } else {-->
+<!--                stockNote.textContent = stock + ' units available';-->
+<!--                stockNote.className = 'stock-note';-->
+<!--            }-->
+
+<!--            qtyEl.max = stock;-->
+<!--        } else {-->
+<!--            pName.textContent = '—'; pName.classList.add('empty');-->
+<!--            pUnit.textContent = '—'; pUnit.classList.add('empty');-->
+<!--            stockNote.textContent = 'Choose a product to see current stock';-->
+<!--            stockNote.className = 'stock-note';-->
+<!--            qtyEl.removeAttribute('max');-->
+<!--        }-->
+
+<!--        pQty.textContent = qty || 0;-->
+<!--        pDate.textContent = formatDate(dateEl.value) || '—';-->
+<!--        pDate.classList.toggle('empty', !dateEl.value);-->
+
+<!--        const total = price * qty;-->
+<!--        pTotal.textContent = '৳ ' + total.toFixed(2);-->
+
+<!--        const overStock = hasProduct && stock !== null && qty > stock;-->
+<!--        sellBtn.disabled = !hasProduct || qty < 1 || stock === 0 || overStock;-->
+<!--        sellBtn.textContent = overStock ? 'Quantity exceeds stock' : 'Sell Product';-->
+<!--    }-->
+
+<!--    productEl.addEventListener('change', refresh);-->
+<!--    qtyEl.addEventListener('input', refresh);-->
+<!--    dateEl.addEventListener('change', refresh);-->
+
+<!--    dateEl.valueAsDate = new Date();-->
+<!--    refresh();-->
+
+<!--    // &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; search filter for sales table &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
+<!--    // const searchBox = document.getElementById('searchBox');-->
+<!--    // const rows = Array.from(document.querySelectorAll('#salesTable tbody tr'));-->
+<!--    //-->
+<!--    // searchBox.addEventListener('input', () => {-->
+<!--    //     const q = searchBox.value.trim().toLowerCase();-->
+<!--    //     rows.forEach(row => {-->
+<!--    //         row.style.display = row.dataset.name.includes(q) ? '' : 'none';-->
+<!--    //     });-->
+<!--    // });-->
+<!--</script>-->
+
+<!--</body>-->
+<!--</html>-->
